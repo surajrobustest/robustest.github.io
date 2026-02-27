@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AppVitals - Android Metrics Reference</title>
+<style>
+  :root {
+    --bg: #0a0e17;
+    --surface: #111827;
+    --surface2: #1a2233;
+    --border: #1e293b;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --accent: #3b82f6;
+    --accent-glow: rgba(59, 130, 246, 0.15);
+    --green: #22c55e;
+    --yellow: #eab308;
+    --orange: #f97316;
+    --red: #ef4444;
+    --purple: #a855f7;
+    --cyan: #06b6d4;
+    --pink: #ec4899;
+    --android: #3ddc84;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #0f172a 0%, #052e16 50%, #0f172a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 0 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(61,220,132,0.08) 0%, transparent 70%);
+  }
+
+  .header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    position: relative;
+  }
+
+  .header h1 span { color: var(--android); }
+
+  .header p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin-top: 8px;
+    position: relative;
+  }
+
+  .badge-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+    position: relative;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  .badge-green { color: var(--android); border-color: rgba(61,220,132,0.3); }
+  .badge-blue { color: var(--accent); border-color: rgba(59,130,246,0.3); }
+  .badge-purple { color: var(--purple); border-color: rgba(168,85,247,0.3); }
+  .badge-cyan { color: var(--cyan); border-color: rgba(6,182,212,0.3); }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--android);
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .nav-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 32px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  .nav-bar a {
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .nav-bar a:hover {
+    color: var(--text);
+    background: var(--surface2);
+  }
+
+  .category {
+    margin-bottom: 32px;
+  }
+
+  .category-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .category-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .category-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+
+  .category-source {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background: var(--surface2);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  .category-desc {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+  }
+
+  .metric-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  .metric-table thead th {
+    background: var(--surface2);
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .metric-table tbody td {
+    padding: 10px 16px;
+    font-size: 0.88rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .metric-table tbody tr:last-child td { border-bottom: none; }
+  .metric-table tbody tr:hover { background: rgba(61,220,132,0.04); }
+
+  .field-name {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.82rem;
+    color: var(--cyan);
+    font-weight: 500;
+  }
+
+  .field-type {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.78rem;
+    color: var(--purple);
+  }
+
+  .field-unit {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(234,179,8,0.1);
+    color: var(--yellow);
+  }
+
+  .field-android {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: rgba(61,220,132,0.1);
+    color: var(--android);
+    margin-left: 4px;
+  }
+
+  .subsection-label td {
+    padding: 10px 16px !important;
+    background: rgba(61,220,132,0.05) !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    color: var(--android) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .cat-cpu { background: rgba(239,68,68,0.15); color: var(--red); }
+  .cat-mem { background: rgba(168,85,247,0.15); color: var(--purple); }
+  .cat-fps { background: rgba(34,197,94,0.15); color: var(--green); }
+  .cat-gpu { background: rgba(6,182,212,0.15); color: var(--cyan); }
+  .cat-net { background: rgba(59,130,246,0.15); color: var(--accent); }
+  .cat-bat { background: rgba(234,179,8,0.15); color: var(--yellow); }
+  .cat-disk { background: rgba(249,115,22,0.15); color: var(--orange); }
+  .cat-thermal { background: rgba(239,68,68,0.15); color: var(--red); }
+  .cat-process { background: rgba(168,85,247,0.15); color: var(--purple); }
+  .cat-ui { background: rgba(236,72,153,0.15); color: var(--pink); }
+  .cat-gc { background: rgba(34,197,94,0.15); color: var(--green); }
+  .cat-crash { background: rgba(239,68,68,0.15); color: var(--red); }
+  .cat-fd { background: rgba(249,115,22,0.15); color: var(--orange); }
+  .cat-input { background: rgba(6,182,212,0.15); color: var(--cyan); }
+  .cat-gfx { background: rgba(34,197,94,0.15); color: var(--green); }
+  .cat-wake { background: rgba(234,179,8,0.15); color: var(--yellow); }
+  .cat-sqlite { background: rgba(59,130,246,0.15); color: var(--accent); }
+  .cat-netd { background: rgba(59,130,246,0.15); color: var(--accent); }
+  .cat-startup { background: rgba(168,85,247,0.15); color: var(--purple); }
+  .cat-jank { background: rgba(249,115,22,0.15); color: var(--orange); }
+  .cat-device { background: rgba(94,234,212,0.15); color: #5eead4; }
+  .cat-app { background: rgba(236,72,153,0.15); color: var(--pink); }
+  .cat-launch { background: rgba(168,85,247,0.15); color: var(--purple); }
+  .cat-logcat { background: rgba(249,115,22,0.15); color: var(--orange); }
+
+  .interval-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+  .interval-fast { background: rgba(34,197,94,0.15); color: var(--green); }
+  .interval-slow { background: rgba(234,179,8,0.15); color: var(--yellow); }
+  .interval-rare { background: rgba(249,115,22,0.15); color: var(--orange); }
+
+  .arch-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.8rem;
+    line-height: 1.8;
+    overflow-x: auto;
+    color: var(--text-muted);
+  }
+
+  .arch-box .hl { color: var(--android); }
+  .arch-box .hl2 { color: var(--accent); }
+  .arch-box .hl3 { color: var(--purple); }
+
+  .footer {
+    text-align: center;
+    padding: 32px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+    margin-top: 48px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>AppVitals</span> Android Metrics Reference</h1>
+  <p>Complete catalog of all Android performance parameters captured via ADB</p>
+  <div class="badge-row">
+    <span class="badge badge-green">No-SDK Approach</span>
+    <span class="badge badge-blue">140+ Parameters</span>
+    <span class="badge badge-purple">22 Categories</span>
+    <span class="badge badge-cyan">ADB Shell + Logcat</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Overview Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">22</div>
+      <div class="stat-label">Metric Categories</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">140+</div>
+      <div class="stat-label">Individual Parameters</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">12</div>
+      <div class="stat-label">ADB Data Sources</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">1s</div>
+      <div class="stat-label">Min Sampling Interval</div>
+    </div>
+  </div>
+
+  <!-- Data Collection Architecture -->
+  <div class="arch-box">
+    <span class="hl">Android Device (ADB Shell)</span>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <span class="hl2">AppVitals Collector</span><br>
+    +-------------------------------+&nbsp;&nbsp;&nbsp;&nbsp;+----------------------------+<br>
+    | <span class="hl3">/proc/stat</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|----|-&gt; <span class="hl2">CPU Metrics</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+    | <span class="hl3">/proc/&lt;pid&gt;/stat</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|----|-&gt; App CPU, Process&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+    | <span class="hl3">dumpsys meminfo &lt;pkg&gt;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|----|-&gt; Memory (PSS/Heap)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+    | <span class="hl3">dumpsys gfxinfo &lt;pkg&gt;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|----|-&gt; FPS, Frame Times, GfxInfo|<br>
+    | <span class="hl3">/proc/&lt;pid&gt;/net/dev</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|----|-&gt; Network I/O&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+    | <span class="hl3">/sys/class/kgsl/.../gpubusy</span>&nbsp;&nbsp;&nbsp;|----|-&gt; GPU Utilization&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+    | <span class="hl3">dumpsys battery</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|----|-&gt; Battery&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+    | <span class="hl3">/sys/class/thermal/...</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|----|-&gt; Thermal&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+    | <span class="hl3">df</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|----|-&gt; Disk Usage&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+    | <span class="hl3">dumpsys power</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|----|-&gt; Wake Locks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+    | <span class="hl3">logcat (streaming)</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|----|-&gt; Transitions, Jank,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+    |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;Crashes, ANRs, GC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+    +-------------------------------+&nbsp;&nbsp;&nbsp;&nbsp;+----------------------------+<br>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-bar">
+    <a href="#cpu">CPU</a>
+    <a href="#memory">Memory</a>
+    <a href="#fps">FPS</a>
+    <a href="#gpu">GPU</a>
+    <a href="#network">Network</a>
+    <a href="#battery">Battery</a>
+    <a href="#disk">Disk</a>
+    <a href="#thermal">Thermal</a>
+    <a href="#process">Process</a>
+    <a href="#ui">UI</a>
+    <a href="#gc">GC</a>
+    <a href="#crash">Crash</a>
+    <a href="#fd">File Descriptors</a>
+    <a href="#input">Input Latency</a>
+    <a href="#gfx">GfxInfo</a>
+    <a href="#wakelock">Wake Lock</a>
+    <a href="#sqlite">SQLite</a>
+    <a href="#netdetail">Network Detail</a>
+    <a href="#launch">Launch Timing</a>
+    <a href="#startup">Page Transitions</a>
+    <a href="#jank">Jank</a>
+    <a href="#logcat">Logcat Events</a>
+    <a href="#device">Device Info</a>
+    <a href="#app">App Info</a>
+  </div>
+
+  <!-- ===== 1. CPU ===== -->
+  <div class="category" id="cpu">
+    <div class="category-header">
+      <div class="category-icon cat-cpu">&#9889;</div>
+      <div>
+        <div class="category-title">CPU Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">1s interval</span>
+      <span class="category-source">/proc/stat + /proc/&lt;pid&gt;/stat</span>
+    </div>
+    <p class="category-desc">CPU usage computed as delta between two samples of /proc/stat (system) and /proc/&lt;pid&gt;/stat (app process).</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">AppPercent</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>App's CPU usage percentage (process time / total time)</td></tr>
+        <tr><td class="field-name">SystemPercent</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>Total system CPU usage percentage</td></tr>
+        <tr><td class="field-name">UserPercent</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>User-mode CPU time percentage</td></tr>
+        <tr><td class="field-name">IOWaitPercent</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>I/O wait time percentage</td></tr>
+        <tr><td class="field-name">Cores</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Number of CPU cores</td></tr>
+        <tr><td class="field-name">PerCore</td><td class="field-type">[]float64</td><td><span class="field-unit">%</span></td><td>Per-core CPU usage (from cpu0, cpu1, ... lines)</td></tr>
+        <tr><td class="field-name">FrequencyMHz</td><td class="field-type">int</td><td><span class="field-unit">MHz</span></td><td>Current CPU frequency</td></tr>
+        <tr class="subsection-label"><td colspan="4">Android Raw CPU Data (CPUStat from /proc/stat)</td></tr>
+        <tr><td class="field-name">User</td><td class="field-type">int64</td><td><span class="field-unit">jiffies</span></td><td>User mode time <span class="field-android">Android raw</span></td></tr>
+        <tr><td class="field-name">Nice</td><td class="field-type">int64</td><td><span class="field-unit">jiffies</span></td><td>Nice priority time <span class="field-android">Android raw</span></td></tr>
+        <tr><td class="field-name">System</td><td class="field-type">int64</td><td><span class="field-unit">jiffies</span></td><td>System/kernel time <span class="field-android">Android raw</span></td></tr>
+        <tr><td class="field-name">Idle</td><td class="field-type">int64</td><td><span class="field-unit">jiffies</span></td><td>Idle time <span class="field-android">Android raw</span></td></tr>
+        <tr><td class="field-name">IOWait</td><td class="field-type">int64</td><td><span class="field-unit">jiffies</span></td><td>I/O wait time <span class="field-android">Android raw</span></td></tr>
+        <tr><td class="field-name">IRQ</td><td class="field-type">int64</td><td><span class="field-unit">jiffies</span></td><td>Hardware interrupt time <span class="field-android">Android raw</span></td></tr>
+        <tr><td class="field-name">SoftIRQ</td><td class="field-type">int64</td><td><span class="field-unit">jiffies</span></td><td>Software interrupt time <span class="field-android">Android raw</span></td></tr>
+        <tr class="subsection-label"><td colspan="4">Process CPU (ProcessCPUStat from /proc/&lt;pid&gt;/stat)</td></tr>
+        <tr><td class="field-name">UTime</td><td class="field-type">int64</td><td><span class="field-unit">jiffies</span></td><td>User mode process time <span class="field-android">Android raw</span></td></tr>
+        <tr><td class="field-name">STime</td><td class="field-type">int64</td><td><span class="field-unit">jiffies</span></td><td>Kernel mode process time <span class="field-android">Android raw</span></td></tr>
+        <tr><td class="field-name">CUTime</td><td class="field-type">int64</td><td><span class="field-unit">jiffies</span></td><td>Children user mode time <span class="field-android">Android raw</span></td></tr>
+        <tr><td class="field-name">CSTime</td><td class="field-type">int64</td><td><span class="field-unit">jiffies</span></td><td>Children kernel mode time <span class="field-android">Android raw</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 2. Memory ===== -->
+  <div class="category" id="memory">
+    <div class="category-header">
+      <div class="category-icon cat-mem">&#128200;</div>
+      <div>
+        <div class="category-title">Memory Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">1s interval</span>
+      <span class="category-source">dumpsys meminfo &lt;pkg&gt;</span>
+    </div>
+    <p class="category-desc">Memory usage from <code>dumpsys meminfo &lt;package&gt;</code>. Android provides detailed PSS breakdown by category.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr class="subsection-label"><td colspan="4">App Memory (from dumpsys meminfo &lt;package&gt;)</td></tr>
+        <tr><td class="field-name">TotalPSS</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Total PSS (Proportional Set Size) - primary Android memory metric</td></tr>
+        <tr><td class="field-name">JavaHeap</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Java Heap (Dalvik/ART heap) <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">NativeHeap</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Native (C/C++) heap allocations <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">Code</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Code pages (.dex, .oat, .so) <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">Stack</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Stack memory</td></tr>
+        <tr><td class="field-name">Graphics</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Graphics buffer memory (GL, EGL) <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">PrivateOther</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Private other (shared memory, temp files)</td></tr>
+        <tr><td class="field-name">System</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>System overhead</td></tr>
+        <tr><td class="field-name">SwapPSS</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Swap PSS (zram compressed) <span class="field-android">Android specific</span></td></tr>
+        <tr class="subsection-label"><td colspan="4">Device Memory (from /proc/meminfo)</td></tr>
+        <tr><td class="field-name">DeviceTotal</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Total device RAM</td></tr>
+        <tr><td class="field-name">DeviceFree</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Free device RAM</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 3. FPS ===== -->
+  <div class="category" id="fps">
+    <div class="category-header">
+      <div class="category-icon cat-fps">&#127916;</div>
+      <div>
+        <div class="category-title">FPS Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">1s interval</span>
+      <span class="category-source">dumpsys gfxinfo &lt;pkg&gt; framestats</span>
+    </div>
+    <p class="category-desc">Frame rate from gfxinfo framestats. Calculates FPS from INTENDED_VSYNC, VSYNC, and FRAME_COMPLETED timestamps.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">FPS</td><td class="field-type">float64</td><td><span class="field-unit">fps</span></td><td>Frames per second (typically 60 or 90/120 on high-refresh devices)</td></tr>
+        <tr><td class="field-name">FrameTimeMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Average frame time</td></tr>
+        <tr><td class="field-name">JankCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Frames exceeding 16.67ms (60fps threshold)</td></tr>
+        <tr><td class="field-name">SlowFrames</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Frames exceeding 17ms (missed vsync)</td></tr>
+        <tr><td class="field-name">FrozenFrames</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Frames exceeding 700ms (frozen UI)</td></tr>
+        <tr><td class="field-name">TotalFrames</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Total frames in sample period</td></tr>
+        <tr class="subsection-label"><td colspan="4">Android Raw Frame Data (FrameData from framestats)</td></tr>
+        <tr><td class="field-name">IntendedVsync</td><td class="field-type">int64</td><td><span class="field-unit">ns</span></td><td>INTENDED_VSYNC timestamp <span class="field-android">Android raw</span></td></tr>
+        <tr><td class="field-name">Vsync</td><td class="field-type">int64</td><td><span class="field-unit">ns</span></td><td>VSYNC timestamp <span class="field-android">Android raw</span></td></tr>
+        <tr><td class="field-name">FrameCompleted</td><td class="field-type">int64</td><td><span class="field-unit">ns</span></td><td>FRAME_COMPLETED timestamp <span class="field-android">Android raw</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 4. GPU ===== -->
+  <div class="category" id="gpu">
+    <div class="category-header">
+      <div class="category-icon cat-gpu">&#128302;</div>
+      <div>
+        <div class="category-title">GPU Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">1s interval</span>
+      <span class="category-source">/sys/class/kgsl/kgsl-3d0/gpubusy</span>
+    </div>
+    <p class="category-desc">GPU utilization from Qualcomm Adreno sysfs. Computed as busy_time / total_time from gpubusy file.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">UsagePercent</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>GPU busy percentage (Qualcomm Adreno) <span class="field-android">Android specific</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 5. Network ===== -->
+  <div class="category" id="network">
+    <div class="category-header">
+      <div class="category-icon cat-net">&#127760;</div>
+      <div>
+        <div class="category-title">Network Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">1s interval</span>
+      <span class="category-source">/proc/&lt;pid&gt;/net/dev</span>
+    </div>
+    <p class="category-desc">Network I/O from per-process /proc/net/dev. Separates WiFi (wlan0) and mobile (rmnet) interfaces.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr class="subsection-label"><td colspan="4">Aggregate Totals</td></tr>
+        <tr><td class="field-name">RxBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Total received bytes (all interfaces)</td></tr>
+        <tr><td class="field-name">TxBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Total transmitted bytes (all interfaces)</td></tr>
+        <tr><td class="field-name">RxPackets</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>Total received packets</td></tr>
+        <tr><td class="field-name">TxPackets</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>Total transmitted packets</td></tr>
+        <tr class="subsection-label"><td colspan="4">Per-Interface Breakdown</td></tr>
+        <tr><td class="field-name">WifiRxBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>WiFi received bytes (wlan0) <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">WifiTxBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>WiFi transmitted bytes (wlan0)</td></tr>
+        <tr><td class="field-name">MobileRxBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Mobile data received (rmnet_ipa0/rmnet0/ccmni0) <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">MobileTxBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Mobile data transmitted</td></tr>
+        <tr class="subsection-label"><td colspan="4">Calculated Rates</td></tr>
+        <tr><td class="field-name">RxBytesPerSec</td><td class="field-type">float64</td><td><span class="field-unit">bytes/s</span></td><td>Download rate (delta between samples)</td></tr>
+        <tr><td class="field-name">TxBytesPerSec</td><td class="field-type">float64</td><td><span class="field-unit">bytes/s</span></td><td>Upload rate (delta between samples)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 6. Battery ===== -->
+  <div class="category" id="battery">
+    <div class="category-header">
+      <div class="category-icon cat-bat">&#128267;</div>
+      <div>
+        <div class="category-title">Battery Metrics</div>
+      </div>
+      <span class="interval-badge interval-slow">5s interval</span>
+      <span class="category-source">dumpsys battery</span>
+    </div>
+    <p class="category-desc">Battery status from <code>dumpsys battery</code>. Temperature in tenths of degree, converted to Celsius.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">Level</td><td class="field-type">int</td><td><span class="field-unit">%</span></td><td>Battery percentage (0-100)</td></tr>
+        <tr><td class="field-name">Temperature</td><td class="field-type">float64</td><td><span class="field-unit">&deg;C</span></td><td>Battery temperature (raw / 10.0)</td></tr>
+        <tr><td class="field-name">Voltage</td><td class="field-type">float64</td><td><span class="field-unit">mV</span></td><td>Battery voltage</td></tr>
+        <tr><td class="field-name">Current</td><td class="field-type">float64</td><td><span class="field-unit">mA</span></td><td>Battery current (raw &micro;A / 1000, negative = discharging)</td></tr>
+        <tr><td class="field-name">Power</td><td class="field-type">float64</td><td><span class="field-unit">mW</span></td><td>Power consumption (voltage &times; current / 1000)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 7. Disk ===== -->
+  <div class="category" id="disk">
+    <div class="category-header">
+      <div class="category-icon cat-disk">&#128190;</div>
+      <div>
+        <div class="category-title">Disk Metrics</div>
+      </div>
+      <span class="interval-badge interval-rare">30s interval</span>
+      <span class="category-source">df (/data partition)</span>
+    </div>
+    <p class="category-desc">Disk usage from <code>df</code> command, targeting the /data partition (main Android storage).</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">TotalBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Total /data partition size</td></tr>
+        <tr><td class="field-name">UsedBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Used disk space</td></tr>
+        <tr><td class="field-name">FreeBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Available disk space</td></tr>
+        <tr><td class="field-name">ReadBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Total bytes read since boot</td></tr>
+        <tr><td class="field-name">WrittenBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Total bytes written since boot</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 8. Thermal ===== -->
+  <div class="category" id="thermal">
+    <div class="category-header">
+      <div class="category-icon cat-thermal">&#127777;</div>
+      <div>
+        <div class="category-title">Thermal Metrics</div>
+      </div>
+      <span class="interval-badge interval-slow">5s interval</span>
+      <span class="category-source">/sys/class/thermal/</span>
+    </div>
+    <p class="category-desc">Temperature from thermal zone sysfs files. Raw values in millidegrees, converted to Celsius.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">CPUTemp</td><td class="field-type">float64</td><td><span class="field-unit">&deg;C</span></td><td>CPU temperature (thermal_zone0)</td></tr>
+        <tr><td class="field-name">GPUTemp</td><td class="field-type">float64</td><td><span class="field-unit">&deg;C</span></td><td>GPU temperature</td></tr>
+        <tr><td class="field-name">BatteryTemp</td><td class="field-type">float64</td><td><span class="field-unit">&deg;C</span></td><td>Battery temperature (from dumpsys battery)</td></tr>
+        <tr><td class="field-name">SkinTemp</td><td class="field-type">float64</td><td><span class="field-unit">&deg;C</span></td><td>Device skin/surface temperature</td></tr>
+        <tr><td class="field-name">ThrottleState</td><td class="field-type">int</td><td><span class="field-unit">level</span></td><td>0=none, 1=light, 2=moderate, 3=severe, 4=critical <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">ThermalStatus</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>"none", "light", "moderate", "severe", "critical"</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 9. Process ===== -->
+  <div class="category" id="process">
+    <div class="category-header">
+      <div class="category-icon cat-process">&#9881;</div>
+      <div>
+        <div class="category-title">Process Metrics</div>
+      </div>
+      <span class="interval-badge interval-slow">5s interval</span>
+      <span class="category-source">/proc/&lt;pid&gt;/status + task/</span>
+    </div>
+    <p class="category-desc">Process-level data from /proc/&lt;pid&gt;/status and task directory.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">PID</td><td class="field-type">int</td><td><span class="field-unit">-</span></td><td>Process ID (from ps -A or /proc/pid/status)</td></tr>
+        <tr><td class="field-name">ThreadCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Number of threads (from Threads: line or /proc/pid/task/)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 10. UI ===== -->
+  <div class="category" id="ui">
+    <div class="category-header">
+      <div class="category-icon cat-ui">&#128241;</div>
+      <div>
+        <div class="category-title">UI Metrics</div>
+      </div>
+      <span class="interval-badge interval-slow">5s interval</span>
+      <span class="category-source">dumpsys activity + gfxinfo</span>
+    </div>
+    <p class="category-desc">UI complexity from <code>dumpsys activity activities</code> and <code>dumpsys gfxinfo</code> view hierarchy.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">ViewCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Number of views on screen (from gfxinfo "Total views")</td></tr>
+        <tr><td class="field-name">NestingDepth</td><td class="field-type">int</td><td><span class="field-unit">levels</span></td><td>Max view hierarchy depth (from gfxinfo indentation)</td></tr>
+        <tr><td class="field-name">ActivitiesCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Activities in back stack (ActivityRecord count) <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">CurrentActivity</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Current activity name (e.g. ".MainActivity") <span class="field-android">Android specific</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 11. GC ===== -->
+  <div class="category" id="gc">
+    <div class="category-header">
+      <div class="category-icon cat-gc">&#9851;</div>
+      <div>
+        <div class="category-title">GC Metrics</div>
+      </div>
+      <span class="interval-badge interval-slow">5s interval</span>
+      <span class="category-source">logcat -s dalvikvm:D art:D</span>
+    </div>
+    <p class="category-desc">Garbage collection from logcat. Parses both ART and Dalvik GC log formats. Android has frequent GC events.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">GCCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Number of GC events in sample period</td></tr>
+        <tr><td class="field-name">GCPauseMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Total GC pause time (from "paused Xms" in log)</td></tr>
+        <tr><td class="field-name">GCFreedBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Bytes freed by GC (from "freed X(YKB)") <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">GCFreedObjects</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>Objects freed by GC (ART format) <span class="field-android">Android specific</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 12. Crash ===== -->
+  <div class="category" id="crash">
+    <div class="category-header">
+      <div class="category-icon cat-crash">&#128165;</div>
+      <div>
+        <div class="category-title">Crash & Stability Metrics</div>
+      </div>
+      <span class="interval-badge interval-slow">5s interval</span>
+      <span class="category-source">logcat *:E</span>
+    </div>
+    <p class="category-desc">Crashes and ANRs from logcat error stream. Detects FATAL EXCEPTION and "ANR in" patterns.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">CrashCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Number of FATAL EXCEPTION crashes detected</td></tr>
+        <tr><td class="field-name">ANRCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Number of ANRs (Application Not Responding) <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">ExceptionCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Number of exceptions detected</td></tr>
+        <tr><td class="field-name">Crashes</td><td class="field-type">[]ExceptionInfo</td><td><span class="field-unit">-</span></td><td>Detailed crash info</td></tr>
+        <tr><td class="field-name">ANRs</td><td class="field-type">[]ExceptionInfo</td><td><span class="field-unit">-</span></td><td>Detailed ANR info</td></tr>
+        <tr><td class="field-name">Exceptions</td><td class="field-type">[]ExceptionInfo</td><td><span class="field-unit">-</span></td><td>Detailed exception info</td></tr>
+        <tr class="subsection-label"><td colspan="4">ExceptionInfo Structure</td></tr>
+        <tr><td class="field-name">Timestamp</td><td class="field-type">time.Time</td><td><span class="field-unit">-</span></td><td>When exception occurred</td></tr>
+        <tr><td class="field-name">Type</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Exception type (e.g. "NullPointerException", "ANR") <span class="field-android">Java exceptions</span></td></tr>
+        <tr><td class="field-name">Message</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Exception message or ANR reason</td></tr>
+        <tr><td class="field-name">Location</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Stack trace location (class:line)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 13. File Descriptors ===== -->
+  <div class="category" id="fd">
+    <div class="category-header">
+      <div class="category-icon cat-fd">&#128194;</div>
+      <div>
+        <div class="category-title">File Descriptor Metrics</div>
+      </div>
+      <span class="interval-badge interval-slow">5s interval</span>
+      <span class="category-source">/proc/&lt;pid&gt;/fd + limits</span>
+    </div>
+    <p class="category-desc">FD usage from <code>ls -la /proc/&lt;pid&gt;/fd</code> and limits from <code>/proc/&lt;pid&gt;/limits</code>.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">OpenFDs</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Currently open file descriptors</td></tr>
+        <tr><td class="field-name">MaxFDs</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Max allowed FDs (from "Max open files" in limits)</td></tr>
+        <tr><td class="field-name">SocketFDs</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Open socket FDs (symlink -&gt; socket:[N]) <span class="field-android">from ls -la</span></td></tr>
+        <tr><td class="field-name">PipeFDs</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Open pipe FDs (symlink -&gt; pipe:[N])</td></tr>
+        <tr><td class="field-name">FileFDs</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Regular file FDs (/data/, /storage/)</td></tr>
+        <tr><td class="field-name">OtherFDs</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Other FD types (anon_inode, /dev/, etc.)</td></tr>
+        <tr><td class="field-name">FDGrowthRate</td><td class="field-type">float64</td><td><span class="field-unit">fds/s</span></td><td>FD leak detection rate</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 14. Input Latency ===== -->
+  <div class="category" id="input">
+    <div class="category-header">
+      <div class="category-icon cat-input">&#9995;</div>
+      <div>
+        <div class="category-title">Input Latency Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">event-driven</span>
+      <span class="category-source">input monitoring</span>
+    </div>
+    <p class="category-desc">Touch and input event responsiveness data.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">TouchToDisplayMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Touch event to display update latency</td></tr>
+        <tr><td class="field-name">InputDispatchMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Time to dispatch input event</td></tr>
+        <tr><td class="field-name">InputDeliveryMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Time to deliver to app</td></tr>
+        <tr><td class="field-name">PendingEvents</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Number of pending input events</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 15. GfxInfo ===== -->
+  <div class="category" id="gfx">
+    <div class="category-header">
+      <div class="category-icon cat-gfx">&#127912;</div>
+      <div>
+        <div class="category-title">GfxInfo Detailed Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">1s interval</span>
+      <span class="category-source">dumpsys gfxinfo &lt;pkg&gt;</span>
+    </div>
+    <p class="category-desc">Detailed rendering stats from <code>dumpsys gfxinfo</code> summary section (not framestats). Includes histogram and percentiles.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr class="subsection-label"><td colspan="4">Frame Time Histogram (from HISTOGRAM line)</td></tr>
+        <tr><td class="field-name">Frames0to16ms</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Good frames (0-16ms) <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">Frames16to32ms</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Slow frames (16-32ms)</td></tr>
+        <tr><td class="field-name">Frames32to50ms</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Very slow frames (32-50ms)</td></tr>
+        <tr><td class="field-name">Frames50plus</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Frozen frames (50ms+)</td></tr>
+        <tr><td class="field-name">TotalFramesGfx</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>"Total frames rendered" from gfxinfo</td></tr>
+        <tr class="subsection-label"><td colspan="4">Percentiles (from gfxinfo percentile lines)</td></tr>
+        <tr><td class="field-name">FrameTimeP50Ms</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>50th percentile frame time <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">FrameTimeP90Ms</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>90th percentile frame time</td></tr>
+        <tr><td class="field-name">FrameTimeP95Ms</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>95th percentile frame time</td></tr>
+        <tr><td class="field-name">FrameTimeP99Ms</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>99th percentile frame time</td></tr>
+        <tr class="subsection-label"><td colspan="4">Render Pipeline Breakdown</td></tr>
+        <tr><td class="field-name">DrawTimeMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Time spent in draw commands</td></tr>
+        <tr><td class="field-name">SyncTimeMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Time waiting for sync</td></tr>
+        <tr><td class="field-name">ProcessTimeMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Time processing frame</td></tr>
+        <tr><td class="field-name">CommandIssueMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Time issuing GPU commands</td></tr>
+        <tr><td class="field-name">SwapBuffersMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Time swapping buffers</td></tr>
+        <tr class="subsection-label"><td colspan="4">Jank Summary</td></tr>
+        <tr><td class="field-name">JankyFrames</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>"Janky frames" from gfxinfo <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">JankyFramePercent</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>Percentage of janky frames (from "X%")</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 16. Wake Lock ===== -->
+  <div class="category" id="wakelock">
+    <div class="category-header">
+      <div class="category-icon cat-wake">&#128161;</div>
+      <div>
+        <div class="category-title">Wake Lock Metrics</div>
+      </div>
+      <span class="interval-badge interval-slow">5s interval</span>
+      <span class="category-source">dumpsys power</span>
+    </div>
+    <p class="category-desc">Wake lock data from <code>dumpsys power</code>. Critical for battery drain analysis on Android.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">ActiveWakeLocks</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Currently held wake locks (from "Wake Locks: size=N") <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">PartialWakeLockMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Total partial wake lock duration</td></tr>
+        <tr><td class="field-name">FullWakeLockMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Total full wake lock duration</td></tr>
+        <tr><td class="field-name">ScreenOnTimeMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Screen on duration (from "Screen on: Nms")</td></tr>
+        <tr><td class="field-name">DozeTimeMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Time in Doze mode <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">WakeLockDetails</td><td class="field-type">[]WakeLockInfo</td><td><span class="field-unit">-</span></td><td>Details of each wake lock</td></tr>
+        <tr class="subsection-label"><td colspan="4">WakeLockInfo Structure</td></tr>
+        <tr><td class="field-name">Tag</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Wake lock tag (e.g. "com.example:service") <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">Type</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>"partial" (from PARTIAL_WAKE_LOCK regex)</td></tr>
+        <tr><td class="field-name">DurationMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>How long held</td></tr>
+        <tr><td class="field-name">Package</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Package holding the lock (extracted from tag)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 17. SQLite ===== -->
+  <div class="category" id="sqlite">
+    <div class="category-header">
+      <div class="category-icon cat-sqlite">&#128451;</div>
+      <div>
+        <div class="category-title">SQLite Metrics</div>
+      </div>
+      <span class="interval-badge interval-slow">5s interval</span>
+      <span class="category-source">logcat SQLiteLog</span>
+    </div>
+    <p class="category-desc">Database query performance from logcat SQLite/database log lines. Detects slow queries above threshold.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">QueryCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Total queries detected in log</td></tr>
+        <tr><td class="field-name">SlowQueryCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Queries exceeding threshold (default 16ms)</td></tr>
+        <tr><td class="field-name">AvgQueryTimeMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Average query execution time</td></tr>
+        <tr><td class="field-name">MaxQueryTimeMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Slowest query time</td></tr>
+        <tr><td class="field-name">TotalQueryTimeMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Total time spent in queries</td></tr>
+        <tr><td class="field-name">DatabaseSizeKB</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Database size (from ls -l)</td></tr>
+        <tr><td class="field-name">WALSizeKB</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Write-ahead log size</td></tr>
+        <tr><td class="field-name">SlowQueries</td><td class="field-type">[]SQLiteQueryInfo</td><td><span class="field-unit">-</span></td><td>Details of slow queries</td></tr>
+        <tr class="subsection-label"><td colspan="4">SQLiteQueryInfo Structure</td></tr>
+        <tr><td class="field-name">Timestamp</td><td class="field-type">time.Time</td><td><span class="field-unit">-</span></td><td>When query was logged</td></tr>
+        <tr><td class="field-name">Query</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>SQL query (truncated to 100 chars)</td></tr>
+        <tr><td class="field-name">DurationMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Execution time</td></tr>
+        <tr><td class="field-name">Table</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Table name (FROM/INTO/UPDATE/TABLE extraction)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 18. Network Detail ===== -->
+  <div class="category" id="netdetail">
+    <div class="category-header">
+      <div class="category-icon cat-netd">&#128225;</div>
+      <div>
+        <div class="category-title">Network Detail Metrics</div>
+      </div>
+      <span class="interval-badge interval-slow">5s interval</span>
+      <span class="category-source">network quality</span>
+    </div>
+    <p class="category-desc">Extended network quality information.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr class="subsection-label"><td colspan="4">Connection Info</td></tr>
+        <tr><td class="field-name">NetworkType</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>"wifi", "mobile", or "none"</td></tr>
+        <tr><td class="field-name">WifiRSSI</td><td class="field-type">int</td><td><span class="field-unit">dBm</span></td><td>WiFi signal strength</td></tr>
+        <tr><td class="field-name">WifiLinkSpeed</td><td class="field-type">int</td><td><span class="field-unit">Mbps</span></td><td>WiFi link speed</td></tr>
+        <tr><td class="field-name">WifiFrequency</td><td class="field-type">int</td><td><span class="field-unit">MHz</span></td><td>WiFi frequency (2.4/5 GHz)</td></tr>
+        <tr><td class="field-name">MobileSignal</td><td class="field-type">int</td><td><span class="field-unit">dBm</span></td><td>Mobile signal strength</td></tr>
+        <tr class="subsection-label"><td colspan="4">Latency</td></tr>
+        <tr><td class="field-name">DNSLookupMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>DNS resolution time</td></tr>
+        <tr><td class="field-name">TCPConnectMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>TCP connection time</td></tr>
+        <tr><td class="field-name">TLSHandshakeMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>TLS handshake time</td></tr>
+        <tr class="subsection-label"><td colspan="4">Quality</td></tr>
+        <tr><td class="field-name">PacketLossPercent</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>Packet loss percentage</td></tr>
+        <tr><td class="field-name">Jitter</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Network jitter</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 19. Launch Timing ===== -->
+  <div class="category" id="launch">
+    <div class="category-header">
+      <div class="category-icon cat-launch">&#128640;</div>
+      <div>
+        <div class="category-title">Launch Timing Metrics</div>
+      </div>
+      <span class="interval-badge interval-rare">on-demand</span>
+      <span class="category-source">am start -W</span>
+    </div>
+    <p class="category-desc">App startup timing via <code>am start -W</code>. Supports cold, warm, and hot start measurement.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">ColdStartMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Cold start time (TotalTime from am start after force-stop) <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">WarmStartMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Warm start time (TotalTime without force-stop) <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">HotStartMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Hot start time (app already in memory) <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">DisplayedMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Time to Displayed (WaitTime from am start)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 20. Page Transitions ===== -->
+  <div class="category" id="startup">
+    <div class="category-header">
+      <div class="category-icon cat-startup">&#128203;</div>
+      <div>
+        <div class="category-title">Page Transition Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">event-driven</span>
+      <span class="category-source">logcat "Displayed" + "Fully drawn"</span>
+    </div>
+    <p class="category-desc">Activity transitions from logcat "Displayed" events (TTID) and "Fully drawn" events (TTFD).</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr class="subsection-label"><td colspan="4">StartupMetrics (session summary)</td></tr>
+        <tr><td class="field-name">Transitions</td><td class="field-type">[]PageTransition</td><td><span class="field-unit">-</span></td><td>All activity transitions during session</td></tr>
+        <tr><td class="field-name">AvgTransitionMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Average transition time</td></tr>
+        <tr><td class="field-name">MaxTransitionMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Slowest transition</td></tr>
+        <tr><td class="field-name">SlowTransitions</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Transitions exceeding 500ms</td></tr>
+        <tr class="subsection-label"><td colspan="4">PageTransition Structure</td></tr>
+        <tr><td class="field-name">Timestamp</td><td class="field-type">time.Time</td><td><span class="field-unit">-</span></td><td>When transition occurred</td></tr>
+        <tr><td class="field-name">FromActivity</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Previous Activity</td></tr>
+        <tr><td class="field-name">ToActivity</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>New Activity (e.g. ".MainActivity") <span class="field-android">Android Activity</span></td></tr>
+        <tr><td class="field-name">Package</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Package name</td></tr>
+        <tr><td class="field-name">DurationMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Time to Initial Display (TTID) - from "Displayed" log</td></tr>
+        <tr><td class="field-name">FullyDrawnMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Time to Fully Drawn (TTFD) - from "Fully drawn" log</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 21. Jank ===== -->
+  <div class="category" id="jank">
+    <div class="category-header">
+      <div class="category-icon cat-jank">&#9888;</div>
+      <div>
+        <div class="category-title">Jank Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">event-driven</span>
+      <span class="category-source">logcat "Skipped N frames" + Choreographer</span>
+    </div>
+    <p class="category-desc">Frame drops from Choreographer "Skipped N frames", Davey (slow frame), slow dispatch, and slow delivery events.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr class="subsection-label"><td colspan="4">JankMetrics (session summary)</td></tr>
+        <tr><td class="field-name">Events</td><td class="field-type">[]JankEvent</td><td><span class="field-unit">-</span></td><td>All jank events during session</td></tr>
+        <tr><td class="field-name">TotalSkippedFrames</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>Total frames skipped ("Skipped N frames")</td></tr>
+        <tr><td class="field-name">SlowFrameCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Davey! duration events <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">SlowDispatchCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>"Slow dispatch took Xms" events <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">SlowDeliveryCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>"Slow delivery took Xms" events <span class="field-android">Android specific</span></td></tr>
+        <tr class="subsection-label"><td colspan="4">JankEvent Structure</td></tr>
+        <tr><td class="field-name">Timestamp</td><td class="field-type">time.Time</td><td><span class="field-unit">-</span></td><td>When jank occurred</td></tr>
+        <tr><td class="field-name">Type</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>"skipped_frames", "slow_frame", "slow_dispatch", "slow_delivery"</td></tr>
+        <tr><td class="field-name">FramesOrMs</td><td class="field-type">int64</td><td><span class="field-unit">count/ms</span></td><td>Frame count for skipped, ms for slow events</td></tr>
+        <tr><td class="field-name">Activity</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Current Activity when jank occurred</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 22. Logcat Events ===== -->
+  <div class="category" id="logcat">
+    <div class="category-header">
+      <div class="category-icon cat-logcat">&#128221;</div>
+      <div>
+        <div class="category-title">Logcat Stream Events</div>
+      </div>
+      <span class="interval-badge interval-fast">real-time stream</span>
+      <span class="category-source">logcat -v time</span>
+    </div>
+    <p class="category-desc">Continuous logcat streaming detects 13 event types in real-time. Android-specific monitoring via LogcatStreamMonitor.</p>
+    <table class="metric-table">
+      <thead><tr><th>Event Type</th><th>Pattern</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">activity_displayed</td><td class="field-type">Displayed pkg/activity: +Xs Yms</td><td>Activity TTID (Time to Initial Display) <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">activity_fully_drawn</td><td class="field-type">Fully drawn pkg/activity: +Xs Yms</td><td>Activity TTFD (Time to Fully Drawn)</td></tr>
+        <tr><td class="field-name">activity_start</td><td class="field-type">START u0 {cmp=pkg/activity}</td><td>Activity intent launch</td></tr>
+        <tr><td class="field-name">skipped_frames</td><td class="field-type">Skipped N frames</td><td>Choreographer frame skip (jank) <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">slow_frame</td><td class="field-type">Davey! duration=Nms</td><td>Slow frame rendering <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">slow_dispatch</td><td class="field-type">Slow dispatch took Nms</td><td>Handler dispatch delay <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">slow_delivery</td><td class="field-type">Slow delivery took Nms</td><td>Message delivery delay <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">gc</td><td class="field-type">GC freed N(XKB) / GC_* freed</td><td>ART or Dalvik GC event</td></tr>
+        <tr><td class="field-name">low_memory</td><td class="field-type">Low on memory / am_low_memory</td><td>System low memory warning <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">process_start</td><td class="field-type">Start proc PID:pkg/user</td><td>Process creation</td></tr>
+        <tr><td class="field-name">process_kill</td><td class="field-type">Killing PID:pkg/user: reason</td><td>Process killed (OOM, user, etc.)</td></tr>
+        <tr><td class="field-name">crash</td><td class="field-type">FATAL EXCEPTION: thread</td><td>Java/Kotlin crash <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">anr</td><td class="field-type">ANR in pkg</td><td>Application Not Responding <span class="field-android">Android specific</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== Device Info ===== -->
+  <div class="category" id="device">
+    <div class="category-header">
+      <div class="category-icon cat-device">&#128241;</div>
+      <div>
+        <div class="category-title">Device Info</div>
+      </div>
+      <span class="interval-badge interval-rare">once at start</span>
+      <span class="category-source">getprop</span>
+    </div>
+    <p class="category-desc">Device metadata from <code>getprop</code> system properties, collected once at session start.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Source Property</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">ID</td><td class="field-type">string</td><td><span class="field-unit">device serial</span></td><td>Device serial number (e.g. "emulator-5554")</td></tr>
+        <tr><td class="field-name">Name</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Device name</td></tr>
+        <tr><td class="field-name">Platform</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>"android"</td></tr>
+        <tr><td class="field-name">Brand</td><td class="field-type">string</td><td><span class="field-unit">ro.product.brand</span></td><td>Device brand (e.g. "google", "samsung") <span class="field-android">getprop</span></td></tr>
+        <tr><td class="field-name">Model</td><td class="field-type">string</td><td><span class="field-unit">ro.product.model</span></td><td>Device model (e.g. "Pixel 8 Pro") <span class="field-android">getprop</span></td></tr>
+        <tr><td class="field-name">Manufacturer</td><td class="field-type">string</td><td><span class="field-unit">ro.product.manufacturer</span></td><td>Manufacturer (e.g. "Google") <span class="field-android">getprop</span></td></tr>
+        <tr><td class="field-name">OSVersion</td><td class="field-type">string</td><td><span class="field-unit">ro.build.version.release</span></td><td>Android version string (e.g. "14") <span class="field-android">getprop</span></td></tr>
+        <tr><td class="field-name">SDKVersion</td><td class="field-type">int</td><td><span class="field-unit">ro.build.version.sdk</span></td><td>Android SDK level (e.g. 34) <span class="field-android">getprop</span></td></tr>
+        <tr><td class="field-name">ScreenWidth</td><td class="field-type">int</td><td><span class="field-unit">px</span></td><td>Screen width in pixels</td></tr>
+        <tr><td class="field-name">ScreenHeight</td><td class="field-type">int</td><td><span class="field-unit">px</span></td><td>Screen height in pixels</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== App Info ===== -->
+  <div class="category" id="app">
+    <div class="category-header">
+      <div class="category-icon cat-app">&#128230;</div>
+      <div>
+        <div class="category-title">App Info</div>
+      </div>
+      <span class="interval-badge interval-rare">once at start</span>
+      <span class="category-source">dumpsys package</span>
+    </div>
+    <p class="category-desc">App metadata from <code>dumpsys package</code>, collected once at session start.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">PackageName</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Package name (e.g. "com.example.app") <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">AppName</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Display name</td></tr>
+        <tr><td class="field-name">Version</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Version name (versionName)</td></tr>
+        <tr><td class="field-name">VersionCode</td><td class="field-type">int</td><td><span class="field-unit">-</span></td><td>Version code (versionCode) <span class="field-android">Android specific</span></td></tr>
+        <tr><td class="field-name">UID</td><td class="field-type">int</td><td><span class="field-unit">-</span></td><td>Linux user ID (from userId=) <span class="field-android">Android specific</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== Per-Screen Analysis ===== -->
+  <div class="category">
+    <div class="category-header">
+      <div class="category-icon cat-ui">&#128202;</div>
+      <div>
+        <div class="category-title">Per-Screen Analysis (ActivityMetrics)</div>
+      </div>
+      <span class="interval-badge interval-fast">computed</span>
+      <span class="category-source">aggregated</span>
+    </div>
+    <p class="category-desc">Aggregated metrics per Activity, computed from all samples during the session.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">Name</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Activity name</td></tr>
+        <tr><td class="field-name">VisitCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Number of times visited</td></tr>
+        <tr><td class="field-name">AvgLoadTimeMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Average TTID</td></tr>
+        <tr><td class="field-name">MaxLoadTimeMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Slowest TTID</td></tr>
+        <tr><td class="field-name">JankEventCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Jank events in this activity</td></tr>
+        <tr><td class="field-name">CrashCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Crashes in this activity</td></tr>
+        <tr><td class="field-name">ANRCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>ANRs in this activity</td></tr>
+        <tr><td class="field-name">AvgFPS</td><td class="field-type">float64</td><td><span class="field-unit">fps</span></td><td>Average FPS in activity</td></tr>
+        <tr><td class="field-name">AvgCPU</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>Average CPU in activity</td></tr>
+        <tr><td class="field-name">AvgMemoryMB</td><td class="field-type">float64</td><td><span class="field-unit">MB</span></td><td>Average memory in activity</td></tr>
+        <tr><td class="field-name">TotalTimeMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Total time spent in activity</td></tr>
+        <tr><td class="field-name">SkippedFrames</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>Total frames skipped</td></tr>
+        <tr><td class="field-name">SlowFrameCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Slow frame events</td></tr>
+        <tr><td class="field-name">IssueCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Total issues (jank + crash + ANR)</td></tr>
+        <tr><td class="field-name">Score</td><td class="field-type">int</td><td><span class="field-unit">0-100</span></td><td>Overall health score</td></tr>
+        <tr><td class="field-name">Level</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>"good", "moderate", or "poor"</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Collection Intervals -->
+  <div class="category">
+    <div class="category-header">
+      <div class="category-icon" style="background: rgba(59,130,246,0.15); color: var(--accent);">&#9201;</div>
+      <div>
+        <div class="category-title">Collection Intervals</div>
+      </div>
+    </div>
+    <table class="metric-table">
+      <thead><tr><th>Tier</th><th>Interval</th><th>Metrics</th><th>ADB Commands</th></tr></thead>
+      <tbody>
+        <tr><td><span class="interval-badge interval-fast">Fast</span></td><td>1 second</td><td>CPU, Memory, FPS, Network, GPU</td><td>/proc/stat, dumpsys meminfo, dumpsys gfxinfo, /proc/net/dev, kgsl gpubusy</td></tr>
+        <tr><td><span class="interval-badge interval-slow">Slow</span></td><td>5 seconds</td><td>Battery, Temperature, Process, GC, UI, Crash</td><td>dumpsys battery, thermal zones, /proc/pid/status, logcat</td></tr>
+        <tr><td><span class="interval-badge interval-rare">Disk</span></td><td>30 seconds</td><td>Disk usage</td><td>df</td></tr>
+        <tr><td><span class="interval-badge interval-fast" style="background: rgba(168,85,247,0.15); color: var(--purple);">Stream</span></td><td>Real-time</td><td>Transitions, Jank, Crashes, ANRs, GC</td><td>logcat -v time (continuous stream)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    AppVitals Android Metrics Reference &mdash; Generated from source code at <code>pkg/android/*.go</code> and <code>pkg/metrics/types.go</code>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AppVitals - iOS Metrics Reference</title>
+<style>
+  :root {
+    --bg: #0a0e17;
+    --surface: #111827;
+    --surface2: #1a2233;
+    --border: #1e293b;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --accent: #3b82f6;
+    --accent-glow: rgba(59, 130, 246, 0.15);
+    --green: #22c55e;
+    --yellow: #eab308;
+    --orange: #f97316;
+    --red: #ef4444;
+    --purple: #a855f7;
+    --cyan: #06b6d4;
+    --pink: #ec4899;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 0 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.08) 0%, transparent 70%);
+  }
+
+  .header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    position: relative;
+  }
+
+  .header h1 span { color: var(--accent); }
+
+  .header p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin-top: 8px;
+    position: relative;
+  }
+
+  .badge-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+    position: relative;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  .badge-blue { color: var(--accent); border-color: rgba(59,130,246,0.3); }
+  .badge-green { color: var(--green); border-color: rgba(34,197,94,0.3); }
+  .badge-purple { color: var(--purple); border-color: rgba(168,85,247,0.3); }
+  .badge-cyan { color: var(--cyan); border-color: rgba(6,182,212,0.3); }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  /* Overview Stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* Category Navigation */
+  .nav-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 32px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  .nav-bar a {
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .nav-bar a:hover {
+    color: var(--text);
+    background: var(--surface2);
+  }
+
+  /* Category Sections */
+  .category {
+    margin-bottom: 32px;
+  }
+
+  .category-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .category-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .category-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+
+  .category-source {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background: var(--surface2);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  .category-desc {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+  }
+
+  /* Tables */
+  .metric-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  .metric-table thead th {
+    background: var(--surface2);
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .metric-table tbody td {
+    padding: 10px 16px;
+    font-size: 0.88rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .metric-table tbody tr:last-child td { border-bottom: none; }
+
+  .metric-table tbody tr:hover { background: rgba(59,130,246,0.04); }
+
+  .field-name {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.82rem;
+    color: var(--cyan);
+    font-weight: 500;
+  }
+
+  .field-type {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.78rem;
+    color: var(--purple);
+  }
+
+  .field-unit {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(234,179,8,0.1);
+    color: var(--yellow);
+  }
+
+  .field-ios {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: rgba(59,130,246,0.1);
+    color: var(--accent);
+    margin-left: 4px;
+  }
+
+  .subsection-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 10px 16px;
+    background: rgba(59,130,246,0.05);
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .subsection-label td {
+    padding: 10px 16px !important;
+    background: rgba(59,130,246,0.05) !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    color: var(--accent) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Color coding for categories */
+  .cat-cpu { background: rgba(239,68,68,0.15); color: var(--red); }
+  .cat-mem { background: rgba(168,85,247,0.15); color: var(--purple); }
+  .cat-fps { background: rgba(34,197,94,0.15); color: var(--green); }
+  .cat-gpu { background: rgba(6,182,212,0.15); color: var(--cyan); }
+  .cat-net { background: rgba(59,130,246,0.15); color: var(--accent); }
+  .cat-bat { background: rgba(234,179,8,0.15); color: var(--yellow); }
+  .cat-disk { background: rgba(249,115,22,0.15); color: var(--orange); }
+  .cat-thermal { background: rgba(239,68,68,0.15); color: var(--red); }
+  .cat-process { background: rgba(168,85,247,0.15); color: var(--purple); }
+  .cat-ui { background: rgba(236,72,153,0.15); color: var(--pink); }
+  .cat-gc { background: rgba(34,197,94,0.15); color: var(--green); }
+  .cat-crash { background: rgba(239,68,68,0.15); color: var(--red); }
+  .cat-fd { background: rgba(249,115,22,0.15); color: var(--orange); }
+  .cat-input { background: rgba(6,182,212,0.15); color: var(--cyan); }
+  .cat-gfx { background: rgba(34,197,94,0.15); color: var(--green); }
+  .cat-wake { background: rgba(234,179,8,0.15); color: var(--yellow); }
+  .cat-sqlite { background: rgba(59,130,246,0.15); color: var(--accent); }
+  .cat-netd { background: rgba(59,130,246,0.15); color: var(--accent); }
+  .cat-startup { background: rgba(168,85,247,0.15); color: var(--purple); }
+  .cat-jank { background: rgba(249,115,22,0.15); color: var(--orange); }
+  .cat-device { background: rgba(94,234,212,0.15); color: #5eead4; }
+  .cat-app { background: rgba(236,72,153,0.15); color: var(--pink); }
+
+  /* Collection interval badge */
+  .interval-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+  .interval-fast { background: rgba(34,197,94,0.15); color: var(--green); }
+  .interval-slow { background: rgba(234,179,8,0.15); color: var(--yellow); }
+  .interval-rare { background: rgba(249,115,22,0.15); color: var(--orange); }
+
+  /* Architecture diagram */
+  .arch-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.8rem;
+    line-height: 1.8;
+    overflow-x: auto;
+    color: var(--text-muted);
+  }
+
+  .arch-box .hl { color: var(--accent); }
+  .arch-box .hl2 { color: var(--green); }
+  .arch-box .hl3 { color: var(--purple); }
+
+  .footer {
+    text-align: center;
+    padding: 32px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+    margin-top: 48px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>AppVitals</span> iOS Metrics Reference</h1>
+  <p>Complete catalog of all iOS performance parameters captured via Instruments protocol</p>
+  <div class="badge-row">
+    <span class="badge badge-blue">No-SDK Approach</span>
+    <span class="badge badge-green">150+ Parameters</span>
+    <span class="badge badge-purple">22 Categories</span>
+    <span class="badge badge-cyan">3 Data Channels</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Overview Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">22</div>
+      <div class="stat-label">Metric Categories</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">150+</div>
+      <div class="stat-label">Individual Parameters</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">3</div>
+      <div class="stat-label">Collection Channels</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">1s</div>
+      <div class="stat-label">Min Sampling Interval</div>
+    </div>
+  </div>
+
+  <!-- Data Collection Architecture -->
+  <div class="arch-box">
+    <span class="hl">iOS Device</span>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <span class="hl2">AppVitals</span><br>
+    +--------------------------+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+----------------------------+<br>
+    | <span class="hl3">Instruments Protocol</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;<span class="hl2">InstrumentsExecutor</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+    |&nbsp;&nbsp;+-- sysmontap -------&gt;</span>|-----|-&gt; CPU, Memory, Process&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+    |&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;Network, Disk I/O&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+    |&nbsp;&nbsp;+-- graphics.opengl -&gt;|-----|-&gt; FPS, GPU Utilization&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+    |&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;Tiler, Renderer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+    |&nbsp;&nbsp;+-- diagnostics ----&gt;|-----|-&gt; Battery, Thermal&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+    +--------------------------+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+----------------------------+<br>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-bar">
+    <a href="#cpu">CPU</a>
+    <a href="#memory">Memory</a>
+    <a href="#fps">FPS</a>
+    <a href="#gpu">GPU</a>
+    <a href="#network">Network</a>
+    <a href="#battery">Battery</a>
+    <a href="#disk">Disk</a>
+    <a href="#thermal">Thermal</a>
+    <a href="#process">Process</a>
+    <a href="#ui">UI</a>
+    <a href="#gc">GC</a>
+    <a href="#crash">Crash</a>
+    <a href="#fd">File Descriptors</a>
+    <a href="#input">Input Latency</a>
+    <a href="#gfx">GfxInfo</a>
+    <a href="#wakelock">Wake Lock</a>
+    <a href="#sqlite">SQLite</a>
+    <a href="#netdetail">Network Detail</a>
+    <a href="#startup">Startup</a>
+    <a href="#jank">Jank</a>
+    <a href="#device">Device Info</a>
+    <a href="#app">App Info</a>
+  </div>
+
+  <!-- ===== 1. CPU ===== -->
+  <div class="category" id="cpu">
+    <div class="category-header">
+      <div class="category-icon cat-cpu">&#9889;</div>
+      <div>
+        <div class="category-title">CPU Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">1s interval</span>
+      <span class="category-source">sysmontap</span>
+    </div>
+    <p class="category-desc">CPU usage at app and system level, collected via sysmontap Instruments channel.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">AppPercent</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>App's CPU usage percentage</td></tr>
+        <tr><td class="field-name">SystemPercent</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>Total system CPU usage percentage</td></tr>
+        <tr><td class="field-name">UserPercent</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>User-mode CPU time percentage</td></tr>
+        <tr><td class="field-name">IOWaitPercent</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>I/O wait time percentage (typically 0 on iOS)</td></tr>
+        <tr><td class="field-name">Cores</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Number of CPU cores</td></tr>
+        <tr><td class="field-name">PerCore</td><td class="field-type">[]float64</td><td><span class="field-unit">%</span></td><td>Per-core CPU usage percentages</td></tr>
+        <tr><td class="field-name">FrequencyMHz</td><td class="field-type">int</td><td><span class="field-unit">MHz</span></td><td>Current CPU frequency</td></tr>
+        <tr class="subsection-label"><td colspan="4">iOS Process-Level CPU (from sysmontap per-process data)</td></tr>
+        <tr><td class="field-name">CPUUsage</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>Process CPU usage <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">CPUTotalUser</td><td class="field-type">int64</td><td><span class="field-unit">ticks</span></td><td>Cumulative user CPU time <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">CPUTotalSystem</td><td class="field-type">int64</td><td><span class="field-unit">ticks</span></td><td>Cumulative system CPU time <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">CtxSwitch</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>Context switches <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">IntWakeups</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>Interrupt wakeups <span class="field-ios">iOS native</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 2. Memory ===== -->
+  <div class="category" id="memory">
+    <div class="category-header">
+      <div class="category-icon cat-mem">&#128200;</div>
+      <div>
+        <div class="category-title">Memory Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">1s interval</span>
+      <span class="category-source">sysmontap</span>
+    </div>
+    <p class="category-desc">Memory usage from physFootprint (most accurate iOS metric, equivalent to Android's PSS).</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">TotalPSS</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Physical footprint - primary iOS memory metric</td></tr>
+        <tr><td class="field-name">JavaHeap</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Java Heap (always 0 on iOS)</td></tr>
+        <tr><td class="field-name">NativeHeap</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Native heap / resident size</td></tr>
+        <tr><td class="field-name">Code</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Code memory</td></tr>
+        <tr><td class="field-name">Stack</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Stack memory</td></tr>
+        <tr><td class="field-name">Graphics</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Graphics memory</td></tr>
+        <tr><td class="field-name">PrivateOther</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Private other memory</td></tr>
+        <tr><td class="field-name">System</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>System memory</td></tr>
+        <tr><td class="field-name">SwapPSS</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Swap PSS (rarely used on iOS)</td></tr>
+        <tr><td class="field-name">DeviceTotal</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Total device RAM</td></tr>
+        <tr><td class="field-name">DeviceFree</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Free device RAM</td></tr>
+        <tr class="subsection-label"><td colspan="4">iOS Extended Process Memory (from sysmontap per-process)</td></tr>
+        <tr><td class="field-name">PhysFootprint</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Physical memory footprint <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">MemResidentSize</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Resident memory size <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">MemVirtualSize</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Virtual memory size <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">MemAnon</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Anonymous memory <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">MemRPrvt</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Resident private memory <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">MemRShrd</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Resident shared memory <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">MemCompressed</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Compressed memory <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">MemPurgeable</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Purgeable memory <span class="field-ios">iOS native</span></td></tr>
+        <tr class="subsection-label"><td colspan="4">System-Wide VM (from sysmontap SystemAttributes)</td></tr>
+        <tr><td class="field-name">VMFreeCount</td><td class="field-type">int64</td><td><span class="field-unit">pages</span></td><td>Free VM pages</td></tr>
+        <tr><td class="field-name">VMUsedCount</td><td class="field-type">int64</td><td><span class="field-unit">pages</span></td><td>Used VM pages</td></tr>
+        <tr><td class="field-name">VMWireCount</td><td class="field-type">int64</td><td><span class="field-unit">pages</span></td><td>Wired (non-evictable) VM pages</td></tr>
+        <tr><td class="field-name">VMCompressorCount</td><td class="field-type">int64</td><td><span class="field-unit">pages</span></td><td>Compressed memory pages</td></tr>
+        <tr><td class="field-name">VMPurgeableCount</td><td class="field-type">int64</td><td><span class="field-unit">pages</span></td><td>Purgeable pages</td></tr>
+        <tr><td class="field-name">VMExtPageCount</td><td class="field-type">int64</td><td><span class="field-unit">pages</span></td><td>External page count</td></tr>
+        <tr><td class="field-name">VMIntPageCount</td><td class="field-type">int64</td><td><span class="field-unit">pages</span></td><td>Internal page count</td></tr>
+        <tr><td class="field-name">VMSpeculativeCount</td><td class="field-type">int64</td><td><span class="field-unit">pages</span></td><td>Speculative pages</td></tr>
+        <tr><td class="field-name">PhysMemSize</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Physical memory size</td></tr>
+        <tr><td class="field-name">VMPageInRate</td><td class="field-type">float64</td><td><span class="field-unit">pages/s</span></td><td>Page-in rate</td></tr>
+        <tr><td class="field-name">VMPageOutRate</td><td class="field-type">float64</td><td><span class="field-unit">pages/s</span></td><td>Page-out rate</td></tr>
+        <tr><td class="field-name">VMSwapUsage</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Swap usage</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 3. FPS ===== -->
+  <div class="category" id="fps">
+    <div class="category-header">
+      <div class="category-icon cat-fps">&#127916;</div>
+      <div>
+        <div class="category-title">FPS Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">1s interval</span>
+      <span class="category-source">graphics.opengl</span>
+    </div>
+    <p class="category-desc">Frame rate data from CoreAnimationFramesPerSecond. iOS ProMotion devices support up to 120 FPS.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">FPS</td><td class="field-type">float64</td><td><span class="field-unit">fps</span></td><td>Frames per second (60-120 depending on display)</td></tr>
+        <tr><td class="field-name">FrameTimeMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Average frame time</td></tr>
+        <tr><td class="field-name">JankCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Frames exceeding 16.67ms threshold</td></tr>
+        <tr><td class="field-name">SlowFrames</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Frames exceeding 17ms (missed vsync)</td></tr>
+        <tr><td class="field-name">FrozenFrames</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Frames exceeding 700ms</td></tr>
+        <tr><td class="field-name">TotalFrames</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Total frames in sample period</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 4. GPU ===== -->
+  <div class="category" id="gpu">
+    <div class="category-header">
+      <div class="category-icon cat-gpu">&#128302;</div>
+      <div>
+        <div class="category-title">GPU Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">1s interval</span>
+      <span class="category-source">graphics.opengl</span>
+    </div>
+    <p class="category-desc">GPU utilization from the graphics.opengl channel. iOS provides separate Tiler and Renderer metrics.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">UsagePercent</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>GPU device utilization percentage</td></tr>
+        <tr class="subsection-label"><td colspan="4">iOS Extended GPU (from GraphicsMessage)</td></tr>
+        <tr><td class="field-name">DeviceUtilization</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>Overall GPU device utilization <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">TilerUtilization</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>GPU tiler utilization <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">RendererUtilization</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>GPU renderer utilization <span class="field-ios">iOS native</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 5. Network ===== -->
+  <div class="category" id="network">
+    <div class="category-header">
+      <div class="category-icon cat-net">&#127760;</div>
+      <div>
+        <div class="category-title">Network Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">1s interval</span>
+      <span class="category-source">sysmontap</span>
+    </div>
+    <p class="category-desc">Network I/O counters from sysmontap per-process and system-wide data.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">RxBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Total received bytes</td></tr>
+        <tr><td class="field-name">TxBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Total transmitted bytes</td></tr>
+        <tr><td class="field-name">RxPackets</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>Total received packets</td></tr>
+        <tr><td class="field-name">TxPackets</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>Total transmitted packets</td></tr>
+        <tr><td class="field-name">WifiRxBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>WiFi received bytes</td></tr>
+        <tr><td class="field-name">WifiTxBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>WiFi transmitted bytes</td></tr>
+        <tr><td class="field-name">MobileRxBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Mobile data received bytes</td></tr>
+        <tr><td class="field-name">MobileTxBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Mobile data transmitted bytes</td></tr>
+        <tr><td class="field-name">RxBytesPerSec</td><td class="field-type">float64</td><td><span class="field-unit">bytes/s</span></td><td>Download rate (calculated)</td></tr>
+        <tr><td class="field-name">TxBytesPerSec</td><td class="field-type">float64</td><td><span class="field-unit">bytes/s</span></td><td>Upload rate (calculated)</td></tr>
+        <tr class="subsection-label"><td colspan="4">iOS Process-Level Network (from sysmontap per-process)</td></tr>
+        <tr><td class="field-name">NetBytesIn</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Process received bytes <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">NetBytesOut</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Process transmitted bytes <span class="field-ios">iOS native</span></td></tr>
+        <tr class="subsection-label"><td colspan="4">System-Wide Network (from sysmontap SystemAttributes)</td></tr>
+        <tr><td class="field-name">NetBytesIn</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>System-wide received bytes</td></tr>
+        <tr><td class="field-name">NetBytesOut</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>System-wide transmitted bytes</td></tr>
+        <tr><td class="field-name">NetPacketsIn</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>System-wide received packets</td></tr>
+        <tr><td class="field-name">NetPacketsOut</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>System-wide transmitted packets</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 6. Battery ===== -->
+  <div class="category" id="battery">
+    <div class="category-header">
+      <div class="category-icon cat-bat">&#128267;</div>
+      <div>
+        <div class="category-title">Battery Metrics</div>
+      </div>
+      <span class="interval-badge interval-slow">5s interval</span>
+      <span class="category-source">diagnostics</span>
+    </div>
+    <p class="category-desc">Battery status from iOS diagnostics service (battery API).</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">Level</td><td class="field-type">int</td><td><span class="field-unit">%</span></td><td>Battery percentage (0-100)</td></tr>
+        <tr><td class="field-name">Temperature</td><td class="field-type">float64</td><td><span class="field-unit">&deg;C</span></td><td>Battery temperature</td></tr>
+        <tr><td class="field-name">Voltage</td><td class="field-type">float64</td><td><span class="field-unit">mV</span></td><td>Battery voltage</td></tr>
+        <tr><td class="field-name">Current</td><td class="field-type">float64</td><td><span class="field-unit">mA</span></td><td>Battery current (negative = discharging)</td></tr>
+        <tr><td class="field-name">Power</td><td class="field-type">float64</td><td><span class="field-unit">mW</span></td><td>Power consumption (voltage x current)</td></tr>
+        <tr class="subsection-label"><td colspan="4">iOS Battery Info (from BatteryInfo struct)</td></tr>
+        <tr><td class="field-name">IsCharging</td><td class="field-type">bool</td><td><span class="field-unit">-</span></td><td>Whether the device is charging <span class="field-ios">iOS native</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 7. Disk ===== -->
+  <div class="category" id="disk">
+    <div class="category-header">
+      <div class="category-icon cat-disk">&#128190;</div>
+      <div>
+        <div class="category-title">Disk Metrics</div>
+      </div>
+      <span class="interval-badge interval-rare">30s interval</span>
+      <span class="category-source">sysmontap + device query</span>
+    </div>
+    <p class="category-desc">Disk usage and I/O statistics from device queries and sysmontap system data.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">TotalBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Total disk space</td></tr>
+        <tr><td class="field-name">UsedBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Used disk space</td></tr>
+        <tr><td class="field-name">FreeBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Free disk space</td></tr>
+        <tr><td class="field-name">ReadBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Total bytes read since boot</td></tr>
+        <tr><td class="field-name">WrittenBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Total bytes written since boot</td></tr>
+        <tr class="subsection-label"><td colspan="4">System-Wide Disk I/O (from sysmontap SystemAttributes)</td></tr>
+        <tr><td class="field-name">DiskReadOps</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>Disk read operations</td></tr>
+        <tr><td class="field-name">DiskWriteOps</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>Disk write operations</td></tr>
+        <tr><td class="field-name">DiskBytesRead</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>System-wide bytes read</td></tr>
+        <tr><td class="field-name">DiskBytesWritten</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>System-wide bytes written</td></tr>
+        <tr class="subsection-label"><td colspan="4">iOS Process-Level Disk I/O (from sysmontap per-process)</td></tr>
+        <tr><td class="field-name">DiskBytesRead</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Process bytes read <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">DiskBytesWritten</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Process bytes written <span class="field-ios">iOS native</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 8. Thermal ===== -->
+  <div class="category" id="thermal">
+    <div class="category-header">
+      <div class="category-icon cat-thermal">&#127777;</div>
+      <div>
+        <div class="category-title">Thermal Metrics</div>
+      </div>
+      <span class="interval-badge interval-slow">5s interval</span>
+      <span class="category-source">diagnostics</span>
+    </div>
+    <p class="category-desc">Temperature sensors and thermal throttling state. iOS thermal states: nominal, fair, serious, critical.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">CPUTemp</td><td class="field-type">float64</td><td><span class="field-unit">&deg;C</span></td><td>CPU temperature</td></tr>
+        <tr><td class="field-name">GPUTemp</td><td class="field-type">float64</td><td><span class="field-unit">&deg;C</span></td><td>GPU temperature</td></tr>
+        <tr><td class="field-name">BatteryTemp</td><td class="field-type">float64</td><td><span class="field-unit">&deg;C</span></td><td>Battery temperature</td></tr>
+        <tr><td class="field-name">SkinTemp</td><td class="field-type">float64</td><td><span class="field-unit">&deg;C</span></td><td>Device skin/surface temperature</td></tr>
+        <tr><td class="field-name">ThrottleState</td><td class="field-type">int</td><td><span class="field-unit">level</span></td><td>0=normal, 1=light, 2=moderate, 3=severe</td></tr>
+        <tr><td class="field-name">ThermalStatus</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>iOS thermal state: "nominal", "fair", "serious", "critical" <span class="field-ios">iOS native</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 9. Process ===== -->
+  <div class="category" id="process">
+    <div class="category-header">
+      <div class="category-icon cat-process">&#9881;</div>
+      <div>
+        <div class="category-title">Process Metrics</div>
+      </div>
+      <span class="interval-badge interval-slow">5s interval</span>
+      <span class="category-source">sysmontap</span>
+    </div>
+    <p class="category-desc">Process-level details from sysmontap per-process data, including identity, threads, IPC, and system calls.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">PID</td><td class="field-type">int</td><td><span class="field-unit">-</span></td><td>Process ID</td></tr>
+        <tr><td class="field-name">ThreadCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Number of threads</td></tr>
+        <tr class="subsection-label"><td colspan="4">iOS Extended Process Identity (from sysmontap)</td></tr>
+        <tr><td class="field-name">PPID</td><td class="field-type">int</td><td><span class="field-unit">-</span></td><td>Parent process ID <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">PGID</td><td class="field-type">int</td><td><span class="field-unit">-</span></td><td>Process group ID <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">UID</td><td class="field-type">int</td><td><span class="field-unit">-</span></td><td>User ID <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">Name</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Process name <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">ResponsiblePID</td><td class="field-type">int</td><td><span class="field-unit">-</span></td><td>Responsible process ID <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">ProcStatus</td><td class="field-type">int</td><td><span class="field-unit">-</span></td><td>Process status code <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">AppSleep</td><td class="field-type">bool</td><td><span class="field-unit">-</span></td><td>Whether app is suspended <span class="field-ios">iOS native</span></td></tr>
+        <tr class="subsection-label"><td colspan="4">Threads & IPC</td></tr>
+        <tr><td class="field-name">MachPortCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Mach port count <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">MsgSent</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>IPC messages sent <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">MsgRecv</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>IPC messages received <span class="field-ios">iOS native</span></td></tr>
+        <tr class="subsection-label"><td colspan="4">System Calls</td></tr>
+        <tr><td class="field-name">SysCallsUnix</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>Unix syscall count <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">SysCallsMach</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>Mach syscall count <span class="field-ios">iOS native</span></td></tr>
+        <tr class="subsection-label"><td colspan="4">Faults & Paging</td></tr>
+        <tr><td class="field-name">Faults</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>Page faults <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">VMPageIns</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>VM page-ins <span class="field-ios">iOS native</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 10. UI ===== -->
+  <div class="category" id="ui">
+    <div class="category-header">
+      <div class="category-icon cat-ui">&#128241;</div>
+      <div>
+        <div class="category-title">UI Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">1s interval</span>
+      <span class="category-source">sysmontap</span>
+    </div>
+    <p class="category-desc">UI complexity metrics. iOS tracks ViewController names instead of Android Activity names.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">ViewCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Number of views on screen</td></tr>
+        <tr><td class="field-name">NestingDepth</td><td class="field-type">int</td><td><span class="field-unit">levels</span></td><td>Max view hierarchy depth</td></tr>
+        <tr><td class="field-name">ActivitiesCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>View controllers in navigation stack</td></tr>
+        <tr><td class="field-name">CurrentActivity</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Current ViewController name (e.g. "HomeViewController")</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 11. GC ===== -->
+  <div class="category" id="gc">
+    <div class="category-header">
+      <div class="category-icon cat-gc">&#9851;</div>
+      <div>
+        <div class="category-title">GC Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">1s interval</span>
+      <span class="category-source">runtime</span>
+    </div>
+    <p class="category-desc">Garbage collection data. iOS uses ARC (Automatic Reference Counting) so GC events are less frequent than Android.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">GCCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Number of GC events in sample period</td></tr>
+        <tr><td class="field-name">GCPauseMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Total GC pause time</td></tr>
+        <tr><td class="field-name">GCFreedBytes</td><td class="field-type">int64</td><td><span class="field-unit">bytes</span></td><td>Bytes freed by GC</td></tr>
+        <tr><td class="field-name">GCFreedObjects</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>Objects freed by GC</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 12. Crash ===== -->
+  <div class="category" id="crash">
+    <div class="category-header">
+      <div class="category-icon cat-crash">&#128165;</div>
+      <div>
+        <div class="category-title">Crash & Stability Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">event-driven</span>
+      <span class="category-source">exception handler</span>
+    </div>
+    <p class="category-desc">Crash and hang detection. iOS uses Mach exceptions (EXC_BAD_ACCESS) and main-thread hangs instead of Android ANRs.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">CrashCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Number of crashes detected</td></tr>
+        <tr><td class="field-name">ANRCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Number of hangs detected (iOS equivalent of ANR)</td></tr>
+        <tr><td class="field-name">ExceptionCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Number of exceptions detected</td></tr>
+        <tr><td class="field-name">Crashes</td><td class="field-type">[]ExceptionInfo</td><td><span class="field-unit">-</span></td><td>Detailed crash information</td></tr>
+        <tr><td class="field-name">ANRs</td><td class="field-type">[]ExceptionInfo</td><td><span class="field-unit">-</span></td><td>Detailed hang information</td></tr>
+        <tr><td class="field-name">Exceptions</td><td class="field-type">[]ExceptionInfo</td><td><span class="field-unit">-</span></td><td>Detailed exception information</td></tr>
+        <tr class="subsection-label"><td colspan="4">ExceptionInfo Structure</td></tr>
+        <tr><td class="field-name">Timestamp</td><td class="field-type">time.Time</td><td><span class="field-unit">-</span></td><td>When exception occurred</td></tr>
+        <tr><td class="field-name">Type</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Exception type (e.g. "EXC_BAD_ACCESS (SIGSEGV)", "Hang")</td></tr>
+        <tr><td class="field-name">Message</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Exception message</td></tr>
+        <tr><td class="field-name">Location</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Where it occurred (e.g. "MenuViewController.swift:189")</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 13. File Descriptors ===== -->
+  <div class="category" id="fd">
+    <div class="category-header">
+      <div class="category-icon cat-fd">&#128194;</div>
+      <div>
+        <div class="category-title">File Descriptor Metrics</div>
+      </div>
+      <span class="interval-badge interval-slow">5s interval</span>
+      <span class="category-source">process info</span>
+    </div>
+    <p class="category-desc">File descriptor usage and leak detection via process info queries.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">OpenFDs</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Currently open file descriptors</td></tr>
+        <tr><td class="field-name">MaxFDs</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Max allowed FDs (ulimit)</td></tr>
+        <tr><td class="field-name">SocketFDs</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Open socket file descriptors</td></tr>
+        <tr><td class="field-name">PipeFDs</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Open pipe file descriptors</td></tr>
+        <tr><td class="field-name">FileFDs</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Regular file FDs</td></tr>
+        <tr><td class="field-name">OtherFDs</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Other FD types</td></tr>
+        <tr><td class="field-name">FDGrowthRate</td><td class="field-type">float64</td><td><span class="field-unit">fds/s</span></td><td>FD leak detection rate</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 14. Input Latency ===== -->
+  <div class="category" id="input">
+    <div class="category-header">
+      <div class="category-icon cat-input">&#9995;</div>
+      <div>
+        <div class="category-title">Input Latency Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">event-driven</span>
+      <span class="category-source">input monitoring</span>
+    </div>
+    <p class="category-desc">Touch and input event responsiveness data.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">TouchToDisplayMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Touch event to display update latency</td></tr>
+        <tr><td class="field-name">InputDispatchMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Time to dispatch input event</td></tr>
+        <tr><td class="field-name">InputDeliveryMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Time to deliver to app</td></tr>
+        <tr><td class="field-name">PendingEvents</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Number of pending input events</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 15. GfxInfo ===== -->
+  <div class="category" id="gfx">
+    <div class="category-header">
+      <div class="category-icon cat-gfx">&#127912;</div>
+      <div>
+        <div class="category-title">GfxInfo Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">1s interval</span>
+      <span class="category-source">frame analysis</span>
+    </div>
+    <p class="category-desc">Detailed frame rendering pipeline metrics with histogram and percentile breakdowns.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr class="subsection-label"><td colspan="4">Frame Time Histogram</td></tr>
+        <tr><td class="field-name">Frames0to16ms</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Good frames (0-16ms)</td></tr>
+        <tr><td class="field-name">Frames16to32ms</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Slow frames (16-32ms)</td></tr>
+        <tr><td class="field-name">Frames32to50ms</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Very slow frames (32-50ms)</td></tr>
+        <tr><td class="field-name">Frames50plus</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Frozen frames (50ms+)</td></tr>
+        <tr><td class="field-name">TotalFramesGfx</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Total frames in gfxinfo sample</td></tr>
+        <tr class="subsection-label"><td colspan="4">Percentiles</td></tr>
+        <tr><td class="field-name">FrameTimeP50Ms</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>50th percentile frame time</td></tr>
+        <tr><td class="field-name">FrameTimeP90Ms</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>90th percentile frame time</td></tr>
+        <tr><td class="field-name">FrameTimeP95Ms</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>95th percentile frame time</td></tr>
+        <tr><td class="field-name">FrameTimeP99Ms</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>99th percentile frame time</td></tr>
+        <tr class="subsection-label"><td colspan="4">Render Pipeline Breakdown</td></tr>
+        <tr><td class="field-name">DrawTimeMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Time spent in draw commands</td></tr>
+        <tr><td class="field-name">SyncTimeMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Time waiting for sync</td></tr>
+        <tr><td class="field-name">ProcessTimeMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Time processing frame</td></tr>
+        <tr><td class="field-name">CommandIssueMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Time issuing GPU commands</td></tr>
+        <tr><td class="field-name">SwapBuffersMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Time swapping buffers</td></tr>
+        <tr class="subsection-label"><td colspan="4">Jank Summary</td></tr>
+        <tr><td class="field-name">JankyFrames</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Frames exceeding 16.67ms</td></tr>
+        <tr><td class="field-name">JankyFramePercent</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>Percentage of janky frames</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 16. Wake Lock ===== -->
+  <div class="category" id="wakelock">
+    <div class="category-header">
+      <div class="category-icon cat-wake">&#128161;</div>
+      <div>
+        <div class="category-title">Wake Lock Metrics</div>
+      </div>
+      <span class="interval-badge interval-slow">5s interval</span>
+      <span class="category-source">power state</span>
+    </div>
+    <p class="category-desc">Power management and wake lock data. iOS handles background execution differently than Android.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">ActiveWakeLocks</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Currently held wake locks (typically 0 on iOS)</td></tr>
+        <tr><td class="field-name">PartialWakeLockMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Partial wake lock duration</td></tr>
+        <tr><td class="field-name">FullWakeLockMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Full wake lock duration</td></tr>
+        <tr><td class="field-name">ScreenOnTimeMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Screen on duration</td></tr>
+        <tr><td class="field-name">DozeTimeMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Time in doze mode</td></tr>
+        <tr><td class="field-name">WakeLockDetails</td><td class="field-type">[]WakeLockInfo</td><td><span class="field-unit">-</span></td><td>Details of active wake locks</td></tr>
+        <tr class="subsection-label"><td colspan="4">WakeLockInfo Structure</td></tr>
+        <tr><td class="field-name">Tag</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Wake lock tag/name</td></tr>
+        <tr><td class="field-name">Type</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Type: partial, full, screen_dim, etc.</td></tr>
+        <tr><td class="field-name">DurationMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>How long held</td></tr>
+        <tr><td class="field-name">Package</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Package holding the lock</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 17. SQLite ===== -->
+  <div class="category" id="sqlite">
+    <div class="category-header">
+      <div class="category-icon cat-sqlite">&#128451;</div>
+      <div>
+        <div class="category-title">SQLite Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">1s interval</span>
+      <span class="category-source">database monitor</span>
+    </div>
+    <p class="category-desc">Database query performance monitoring and slow query detection.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">QueryCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Total queries in sample period</td></tr>
+        <tr><td class="field-name">SlowQueryCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Queries exceeding 16ms</td></tr>
+        <tr><td class="field-name">AvgQueryTimeMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Average query execution time</td></tr>
+        <tr><td class="field-name">MaxQueryTimeMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Slowest query time</td></tr>
+        <tr><td class="field-name">TotalQueryTimeMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Total time spent in queries</td></tr>
+        <tr><td class="field-name">DatabaseSizeKB</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Database size</td></tr>
+        <tr><td class="field-name">WALSizeKB</td><td class="field-type">int64</td><td><span class="field-unit">KB</span></td><td>Write-ahead log size</td></tr>
+        <tr><td class="field-name">SlowQueries</td><td class="field-type">[]SQLiteQueryInfo</td><td><span class="field-unit">-</span></td><td>Details of slow queries</td></tr>
+        <tr class="subsection-label"><td colspan="4">SQLiteQueryInfo Structure</td></tr>
+        <tr><td class="field-name">Timestamp</td><td class="field-type">time.Time</td><td><span class="field-unit">-</span></td><td>When query executed</td></tr>
+        <tr><td class="field-name">Query</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>SQL query (truncated)</td></tr>
+        <tr><td class="field-name">DurationMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Execution time</td></tr>
+        <tr><td class="field-name">Table</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Table name if parseable</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 18. Network Detail ===== -->
+  <div class="category" id="netdetail">
+    <div class="category-header">
+      <div class="category-icon cat-netd">&#128225;</div>
+      <div>
+        <div class="category-title">Network Detail Metrics</div>
+      </div>
+      <span class="interval-badge interval-slow">5s interval</span>
+      <span class="category-source">network quality</span>
+    </div>
+    <p class="category-desc">Extended network quality information including signal strength, latency, and packet loss.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr class="subsection-label"><td colspan="4">Connection Info</td></tr>
+        <tr><td class="field-name">NetworkType</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>"wifi", "mobile", or "none"</td></tr>
+        <tr><td class="field-name">WifiRSSI</td><td class="field-type">int</td><td><span class="field-unit">dBm</span></td><td>WiFi signal strength</td></tr>
+        <tr><td class="field-name">WifiLinkSpeed</td><td class="field-type">int</td><td><span class="field-unit">Mbps</span></td><td>WiFi link speed</td></tr>
+        <tr><td class="field-name">WifiFrequency</td><td class="field-type">int</td><td><span class="field-unit">MHz</span></td><td>WiFi frequency</td></tr>
+        <tr><td class="field-name">MobileSignal</td><td class="field-type">int</td><td><span class="field-unit">dBm</span></td><td>Mobile signal strength</td></tr>
+        <tr class="subsection-label"><td colspan="4">Latency</td></tr>
+        <tr><td class="field-name">DNSLookupMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>DNS resolution time</td></tr>
+        <tr><td class="field-name">TCPConnectMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>TCP connection time</td></tr>
+        <tr><td class="field-name">TLSHandshakeMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>TLS handshake time</td></tr>
+        <tr class="subsection-label"><td colspan="4">Quality</td></tr>
+        <tr><td class="field-name">PacketLossPercent</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>Packet loss percentage</td></tr>
+        <tr><td class="field-name">Jitter</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Network jitter</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 19. Startup / Page Transitions ===== -->
+  <div class="category" id="startup">
+    <div class="category-header">
+      <div class="category-icon cat-startup">&#128640;</div>
+      <div>
+        <div class="category-title">Startup & Page Transition Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">event-driven</span>
+      <span class="category-source">view lifecycle</span>
+    </div>
+    <p class="category-desc">ViewController lifecycle transition timing. Measured from iOS view lifecycle events.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr class="subsection-label"><td colspan="4">StartupMetrics (session summary)</td></tr>
+        <tr><td class="field-name">Transitions</td><td class="field-type">[]PageTransition</td><td><span class="field-unit">-</span></td><td>All page transitions during session</td></tr>
+        <tr><td class="field-name">AvgTransitionMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Average transition time</td></tr>
+        <tr><td class="field-name">MaxTransitionMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Slowest transition</td></tr>
+        <tr><td class="field-name">SlowTransitions</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Transitions exceeding 500ms</td></tr>
+        <tr class="subsection-label"><td colspan="4">PageTransition Structure</td></tr>
+        <tr><td class="field-name">Timestamp</td><td class="field-type">time.Time</td><td><span class="field-unit">-</span></td><td>When transition occurred</td></tr>
+        <tr><td class="field-name">FromActivity</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Previous ViewController</td></tr>
+        <tr><td class="field-name">ToActivity</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>New ViewController</td></tr>
+        <tr><td class="field-name">Package</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Bundle ID</td></tr>
+        <tr><td class="field-name">DurationMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Time to display (TTID)</td></tr>
+        <tr><td class="field-name">FullyDrawnMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Time to fully drawn (TTFD, 0 if not reported)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 20. Jank ===== -->
+  <div class="category" id="jank">
+    <div class="category-header">
+      <div class="category-icon cat-jank">&#9888;</div>
+      <div>
+        <div class="category-title">Jank Metrics</div>
+      </div>
+      <span class="interval-badge interval-fast">event-driven</span>
+      <span class="category-source">frame analysis</span>
+    </div>
+    <p class="category-desc">Frame drop and hitch detection. iOS uses "hitch" terminology for jank events.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr class="subsection-label"><td colspan="4">JankMetrics (session summary)</td></tr>
+        <tr><td class="field-name">Events</td><td class="field-type">[]JankEvent</td><td><span class="field-unit">-</span></td><td>All jank events during session</td></tr>
+        <tr><td class="field-name">TotalSkippedFrames</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>Total frames skipped</td></tr>
+        <tr><td class="field-name">SlowFrameCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Count of slow frame events</td></tr>
+        <tr><td class="field-name">SlowDispatchCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Count of slow dispatch events</td></tr>
+        <tr><td class="field-name">SlowDeliveryCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Count of slow delivery events</td></tr>
+        <tr class="subsection-label"><td colspan="4">JankEvent Structure</td></tr>
+        <tr><td class="field-name">Timestamp</td><td class="field-type">time.Time</td><td><span class="field-unit">-</span></td><td>When jank occurred</td></tr>
+        <tr><td class="field-name">Type</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>"hitch", "slow_frame", "skipped_frames" <span class="field-ios">iOS: "hitch"</span></td></tr>
+        <tr><td class="field-name">FramesOrMs</td><td class="field-type">int64</td><td><span class="field-unit">count/ms</span></td><td>Frame count for skipped, ms for slow events</td></tr>
+        <tr><td class="field-name">Activity</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Current ViewController when jank occurred</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 21. Device Info ===== -->
+  <div class="category" id="device">
+    <div class="category-header">
+      <div class="category-icon cat-device">&#128241;</div>
+      <div>
+        <div class="category-title">Device Info</div>
+      </div>
+      <span class="interval-badge interval-rare">once at start</span>
+      <span class="category-source">lockdown service</span>
+    </div>
+    <p class="category-desc">Device metadata collected once at session start via iOS lockdown service / GetValues.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">ID</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Device UDID</td></tr>
+        <tr><td class="field-name">Name</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Device name (e.g. "iPhone 15 Pro")</td></tr>
+        <tr><td class="field-name">Platform</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>"ios"</td></tr>
+        <tr><td class="field-name">Brand</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>"Apple"</td></tr>
+        <tr><td class="field-name">Model</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Device model (e.g. "iPhone16,1")</td></tr>
+        <tr><td class="field-name">Manufacturer</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>"Apple"</td></tr>
+        <tr><td class="field-name">OSVersion</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>iOS version (e.g. "iOS 17.2")</td></tr>
+        <tr><td class="field-name">SDKVersion</td><td class="field-type">int</td><td><span class="field-unit">-</span></td><td>iOS SDK version number</td></tr>
+        <tr><td class="field-name">ScreenWidth</td><td class="field-type">int</td><td><span class="field-unit">px</span></td><td>Screen width in pixels</td></tr>
+        <tr><td class="field-name">ScreenHeight</td><td class="field-type">int</td><td><span class="field-unit">px</span></td><td>Screen height in pixels</td></tr>
+        <tr class="subsection-label"><td colspan="4">iOS Extended Device Info (from DeviceInfoData)</td></tr>
+        <tr><td class="field-name">UDID</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Device unique identifier <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">ProductType</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Product type (e.g. "iPhone16,1") <span class="field-ios">iOS native</span></td></tr>
+        <tr><td class="field-name">BuildVersion</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Build version string <span class="field-ios">iOS native</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== 22. App Info ===== -->
+  <div class="category" id="app">
+    <div class="category-header">
+      <div class="category-icon cat-app">&#128230;</div>
+      <div>
+        <div class="category-title">App Info</div>
+      </div>
+      <span class="interval-badge interval-rare">once at start</span>
+      <span class="category-source">bundle info</span>
+    </div>
+    <p class="category-desc">App metadata collected from the iOS bundle at session start.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">PackageName</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Bundle ID (e.g. "com.example.app")</td></tr>
+        <tr><td class="field-name">AppName</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Display name</td></tr>
+        <tr><td class="field-name">Version</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>Version string (CFBundleShortVersionString)</td></tr>
+        <tr><td class="field-name">VersionCode</td><td class="field-type">int</td><td><span class="field-unit">-</span></td><td>Build number (CFBundleVersion)</td></tr>
+        <tr><td class="field-name">UID</td><td class="field-type">int</td><td><span class="field-unit">-</span></td><td>User ID (0 on iOS)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== Per-Screen Analysis ===== -->
+  <div class="category" id="activity">
+    <div class="category-header">
+      <div class="category-icon cat-ui">&#128202;</div>
+      <div>
+        <div class="category-title">Per-Screen Analysis (ActivityMetrics)</div>
+      </div>
+      <span class="interval-badge interval-fast">computed</span>
+      <span class="category-source">aggregated</span>
+    </div>
+    <p class="category-desc">Aggregated metrics per ViewController, computed from all samples during the session.</p>
+    <table class="metric-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Unit</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td class="field-name">Name</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>ViewController name</td></tr>
+        <tr><td class="field-name">VisitCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Number of times visited</td></tr>
+        <tr><td class="field-name">AvgLoadTimeMs</td><td class="field-type">float64</td><td><span class="field-unit">ms</span></td><td>Average TTID</td></tr>
+        <tr><td class="field-name">MaxLoadTimeMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Slowest TTID</td></tr>
+        <tr><td class="field-name">JankEventCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Jank events in this screen</td></tr>
+        <tr><td class="field-name">CrashCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Crashes in this screen</td></tr>
+        <tr><td class="field-name">ANRCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Hangs in this screen</td></tr>
+        <tr><td class="field-name">AvgFPS</td><td class="field-type">float64</td><td><span class="field-unit">fps</span></td><td>Average FPS when in screen</td></tr>
+        <tr><td class="field-name">AvgCPU</td><td class="field-type">float64</td><td><span class="field-unit">%</span></td><td>Average CPU when in screen</td></tr>
+        <tr><td class="field-name">AvgMemoryMB</td><td class="field-type">float64</td><td><span class="field-unit">MB</span></td><td>Average memory when in screen</td></tr>
+        <tr><td class="field-name">TotalTimeMs</td><td class="field-type">int64</td><td><span class="field-unit">ms</span></td><td>Total time spent in screen</td></tr>
+        <tr><td class="field-name">SkippedFrames</td><td class="field-type">int64</td><td><span class="field-unit">count</span></td><td>Total frames skipped</td></tr>
+        <tr><td class="field-name">SlowFrameCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Slow frame events</td></tr>
+        <tr><td class="field-name">IssueCount</td><td class="field-type">int</td><td><span class="field-unit">count</span></td><td>Total issues (jank + crash + hang)</td></tr>
+        <tr><td class="field-name">Score</td><td class="field-type">int</td><td><span class="field-unit">0-100</span></td><td>Overall health score</td></tr>
+        <tr><td class="field-name">Level</td><td class="field-type">string</td><td><span class="field-unit">-</span></td><td>"good", "moderate", or "poor"</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    AppVitals iOS Metrics Reference &mdash; Generated from source code at <code>pkg/metrics/types.go</code> and <code>pkg/ios/executor.go</code>
+  </div>
+
+</div>
+
+</body>
+</html>
