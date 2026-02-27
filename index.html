@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AppVitals - Metrics Reference</title>
+<style>
+  :root {
+    --bg: #0a0e17;
+    --surface: #111827;
+    --surface2: #1a2233;
+    --border: #1e293b;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --accent: #3b82f6;
+    --green: #22c55e;
+    --purple: #a855f7;
+    --cyan: #06b6d4;
+    --android: #3ddc84;
+    --ios: #3b82f6;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #0f172a 0%, #1a1033 40%, #052e16 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 64px 0 56px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.06) 0%, transparent 70%);
+  }
+
+  .header h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    position: relative;
+  }
+
+  .header h1 .blue { color: var(--accent); }
+  .header h1 .green { color: var(--android); }
+
+  .header p {
+    color: var(--text-muted);
+    font-size: 1.15rem;
+    margin-top: 10px;
+    position: relative;
+  }
+
+  .badge-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+    position: relative;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  .badge-green { color: var(--android); border-color: rgba(61,220,132,0.3); }
+  .badge-blue { color: var(--accent); border-color: rgba(59,130,246,0.3); }
+  .badge-purple { color: var(--purple); border-color: rgba(168,85,247,0.3); }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+    flex: 1;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 24px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 32px;
+    text-decoration: none;
+    color: var(--text);
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+  }
+
+  .card-android:hover {
+    border-color: rgba(61,220,132,0.4);
+    box-shadow: 0 8px 32px rgba(61,220,132,0.08);
+  }
+
+  .card-ios:hover {
+    border-color: rgba(59,130,246,0.4);
+    box-shadow: 0 8px 32px rgba(59,130,246,0.08);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .card-android::before { background: linear-gradient(90deg, var(--android), #06b6d4); }
+  .card-ios::before { background: linear-gradient(90deg, var(--ios), var(--purple)); }
+
+  .card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 16px;
+  }
+
+  .card h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .card-android h2 { color: var(--android); }
+  .card-ios h2 { color: var(--ios); }
+
+  .card p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+  }
+
+  .card-stats {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .card-stat {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.8rem;
+  }
+
+  .card-stat strong {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .card-android .card-stat strong { color: var(--android); }
+  .card-ios .card-stat strong { color: var(--ios); }
+
+  .card-stat span {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+  }
+
+  .card-arrow {
+    position: absolute;
+    top: 36px;
+    right: 32px;
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    transition: transform 0.2s, color 0.2s;
+  }
+
+  .card:hover .card-arrow {
+    transform: translateX(4px);
+  }
+
+  .card-android:hover .card-arrow { color: var(--android); }
+  .card-ios:hover .card-arrow { color: var(--ios); }
+
+  .footer {
+    text-align: center;
+    padding: 24px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span class="blue">App</span><span class="green">Vitals</span></h1>
+  <p>Performance metrics reference for mobile applications</p>
+  <div class="badge-row">
+    <div class="badge badge-green">No-SDK Approach</div>
+    <div class="badge badge-blue">290+ Parameters</div>
+    <div class="badge badge-purple">44 Categories</div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="cards">
+
+    <a href="android_metrics_reference.html" class="card card-android">
+      <div class="card-arrow">&rarr;</div>
+      <div class="card-icon">&#129302;</div>
+      <h2>Android Metrics</h2>
+      <p>Complete catalog of all Android performance parameters captured via ADB shell commands and logcat.</p>
+      <div class="card-stats">
+        <div class="card-stat">
+          <strong>140+</strong>
+          <span>Parameters</span>
+        </div>
+        <div class="card-stat">
+          <strong>22</strong>
+          <span>Categories</span>
+        </div>
+        <div class="card-stat">
+          <strong>12</strong>
+          <span>ADB Sources</span>
+        </div>
+      </div>
+    </a>
+
+    <a href="ios_metrics_reference.html" class="card card-ios">
+      <div class="card-arrow">&rarr;</div>
+      <div class="card-icon">&#63743;</div>
+      <h2>iOS Metrics</h2>
+      <p>Complete catalog of all iOS performance parameters captured via Instruments protocol channels.</p>
+      <div class="card-stats">
+        <div class="card-stat">
+          <strong>150+</strong>
+          <span>Parameters</span>
+        </div>
+        <div class="card-stat">
+          <strong>22</strong>
+          <span>Categories</span>
+        </div>
+        <div class="card-stat">
+          <strong>3</strong>
+          <span>Data Channels</span>
+        </div>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<div class="footer">
+  AppVitals Metrics Reference
+</div>
+
+</body>
+</html>
