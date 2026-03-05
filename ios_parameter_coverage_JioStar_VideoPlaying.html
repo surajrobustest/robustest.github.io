@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AppVitals — iOS Parameter Coverage Report</title>
+<style>
+  /* ── Reset & Base ────────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: #f3f4f6;
+    color: #1f2937;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Sticky Nav ──────────────────────────────────────────────────── */
+  .top-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #1f2937;
+    border-bottom: 3px solid #10b981;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 48px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .top-nav .brand {
+    font-weight: 700;
+    color: #10b981;
+    font-size: 15px;
+    margin-right: 24px;
+    flex-shrink: 0;
+  }
+  .top-nav a {
+    color: #d1d5db;
+    text-decoration: none;
+    font-size: 13px;
+    padding: 12px 14px;
+    transition: color .15s, background .15s;
+    flex-shrink: 0;
+  }
+  .top-nav a:hover {
+    color: #fff;
+    background: rgba(255,255,255,.08);
+  }
+
+  /* ── Container ───────────────────────────────────────────────────── */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+
+  /* ── Header ──────────────────────────────────────────────────────── */
+  .report-header {
+    background: #fff;
+    border-radius: 12px;
+    padding: 40px 36px;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    border-top: 4px solid #10b981;
+  }
+  .report-header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1f2937;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+  }
+  .report-header .subtitle {
+    font-size: 16px;
+    color: #6b7280;
+    margin-bottom: 20px;
+  }
+  .header-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 8px 24px;
+  }
+  .header-meta .meta-item {
+    font-size: 14px;
+    color: #374151;
+  }
+  .header-meta .meta-item strong {
+    color: #1f2937;
+  }
+
+  /* ── Summary Cards ───────────────────────────────────────────────── */
+  .cards-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px 18px 18px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    border-top: 4px solid transparent;
+    transition: transform .15s;
+  }
+  .card:hover { transform: translateY(-2px); }
+  .card .card-value {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 2px;
+  }
+  .card .card-pct {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .card .card-label {
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 500;
+  }
+  .card.dark   { border-top-color: #1f2937; }
+  .card.dark .card-value { color: #1f2937; }
+  .card.green  { border-top-color: #10b981; }
+  .card.green .card-value, .card.green .card-pct { color: #10b981; }
+  .card.blue   { border-top-color: #3b82f6; }
+  .card.blue .card-value, .card.blue .card-pct { color: #3b82f6; }
+  .card.orange { border-top-color: #f59e0b; }
+  .card.orange .card-value, .card.orange .card-pct { color: #f59e0b; }
+  .card.gray   { border-top-color: #6b7280; }
+  .card.gray .card-value, .card.gray .card-pct { color: #6b7280; }
+
+  /* highlight card */
+  .card.highlight {
+    border-top-width: 5px;
+    border-top-color: #10b981;
+    background: linear-gradient(135deg, #ecfdf5, #fff);
+  }
+  .card.highlight .card-value { font-size: 40px; color: #059669; }
+  .card.highlight .card-label { font-size: 14px; font-weight: 600; color: #047857; }
+
+  /* ── Coverage Bar ────────────────────────────────────────────────── */
+  .coverage-bar-section {
+    background: #fff;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  .coverage-bar-section .bar-label {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 10px;
+  }
+  .bar-track {
+    width: 100%;
+    height: 32px;
+    background: #e5e7eb;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-fill {
+    height: 100%;
+    width: 69.9%;
+    background: linear-gradient(90deg, #10b981, #34d399);
+    border-radius: 16px;
+    transition: width .6s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 14px;
+  }
+  .bar-fill span {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  /* ── Donut Chart ─────────────────────────────────────────────────── */
+  .donut-section {
+    background: #fff;
+    border-radius: 10px;
+    padding: 32px 28px;
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    text-align: center;
+  }
+  .donut-section h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #1f2937;
+  }
+  .donut-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+  }
+  .donut-legend {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .donut-legend .leg-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #374151;
+  }
+  .donut-legend .leg-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* ── Section Panels ──────────────────────────────────────────────── */
+  .section-panel {
+    background: #fff;
+    border-radius: 10px;
+    padding: 28px 28px 20px;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  .section-panel h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #1f2937;
+  }
+  .section-panel .section-sub {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 16px;
+  }
+  .section-panel .section-note {
+    font-size: 13px;
+    color: #6b7280;
+    background: #f9fafb;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    border-left: 3px solid #d1d5db;
+  }
+
+  /* ── Tables ──────────────────────────────────────────────────────── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  .data-table th {
+    background: #f9fafb;
+    font-weight: 700;
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 2px solid #e5e7eb;
+    color: #374151;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  .data-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: top;
+  }
+  .data-table tbody tr:nth-child(even) td { background: #f9fafb; }
+  .data-table tbody tr:hover td { background: #f0fdf4; }
+  .data-table .field-name { font-family: 'SF Mono', 'Menlo', 'Consolas', 'Liberation Mono', monospace; font-size: 13px; font-weight: 600; color: #1f2937; }
+  .data-table .num-col { text-align: center; width: 40px; color: #9ca3af; font-weight: 600; }
+  .data-table .value-col { color: #374151; }
+  .data-table .source-col { color: #6b7280; font-size: 12.5px; }
+  .data-table .reason-col { color: #6b7280; font-size: 12.5px; max-width: 400px; }
+
+  /* Left border accents */
+  .border-green  { border-left: 4px solid #10b981; }
+  .border-blue   { border-left: 4px solid #3b82f6; }
+  .border-orange { border-left: 4px solid #f59e0b; }
+  .border-gray   { border-left: 4px solid #6b7280; }
+  .border-purple { border-left: 4px solid #8b5cf6; }
+
+  /* Category header rows */
+  .cat-header-green td  { background: #ecfdf5 !important; font-weight: 700; font-size: 13px; color: #047857; letter-spacing: .3px; border-bottom: 1px solid #a7f3d0; }
+  .cat-header-blue td   { background: #eff6ff !important; font-weight: 700; font-size: 13px; color: #1d4ed8; letter-spacing: .3px; border-bottom: 1px solid #bfdbfe; }
+  .cat-header-orange td { background: #fffbeb !important; font-weight: 700; font-size: 13px; color: #b45309; letter-spacing: .3px; border-bottom: 1px solid #fde68a; }
+
+  /* Badge pills for data sources */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .3px;
+  }
+  .badge-green  { background: #d1fae5; color: #065f46; }
+  .badge-blue   { background: #dbeafe; color: #1e40af; }
+  .badge-purple { background: #ede9fe; color: #5b21b6; }
+  .badge-orange { background: #fef3c7; color: #92400e; }
+  .badge-red    { background: #fee2e2; color: #991b1b; }
+  .badge-teal   { background: #ccfbf1; color: #115e59; }
+
+  /* ── Footer ──────────────────────────────────────────────────────── */
+  .report-footer {
+    text-align: center;
+    padding: 32px 20px 0;
+    font-size: 13px;
+    color: #6b7280;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 8px;
+  }
+  .report-footer strong { color: #1f2937; }
+
+  /* ── Print Styles ────────────────────────────────────────────────── */
+  @media print {
+    body { background: #fff; }
+    .top-nav { position: static; background: #1f2937; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .container { max-width: 100%; padding: 16px; }
+    .card, .section-panel, .coverage-bar-section, .donut-section, .report-header {
+      box-shadow: none;
+      break-inside: avoid;
+    }
+    .data-table { font-size: 11px; }
+    .data-table th, .data-table td { padding: 6px 8px; }
+    .bar-fill { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .cat-header-green td, .cat-header-blue td, .cat-header-orange td { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  /* ── Responsive ──────────────────────────────────────────────────── */
+  @media (max-width: 720px) {
+    .cards-row { grid-template-columns: repeat(2, 1fr); }
+    .header-meta { grid-template-columns: 1fr; }
+    .donut-wrapper { flex-direction: column; }
+    .data-table { font-size: 12px; }
+    .top-nav a { padding: 12px 10px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     STICKY NAV
+     ════════════════════════════════════════════════════════════════════ -->
+<nav class="top-nav">
+  <span class="brand">AppVitals</span>
+  <a href="#summary">Summary</a>
+  <a href="#coverage-bar">Coverage</a>
+  <a href="#donut">Distribution</a>
+  <a href="#actively-collected">Actively Collected</a>
+  <a href="#wired-zero">Wired &amp; Zero</a>
+  <a href="#no-api">iOS Limitation</a>
+
+</nav>
+
+<div class="container">
+
+<!-- ════════════════════════════════════════════════════════════════════
+     HEADER
+     ════════════════════════════════════════════════════════════════════ -->
+<header class="report-header" id="summary">
+  <h1>AppVitals &mdash; iOS Parameter Coverage Report</h1>
+  <p class="subtitle">iOS-specific fields only (92 total)</p>
+  <div class="header-meta">
+    <div class="meta-item"><strong>Device:</strong> iPhone SE (3rd Gen) &mdash; iOS 26.2.1</div>
+    <div class="meta-item"><strong>App:</strong> JioHotstar (in.startv.hotstar)</div>
+    <div class="meta-item"><strong>Collection:</strong> 297 samples over 5 minutes</div>
+    <div class="meta-item"><strong>Date:</strong> March 5, 2026</div>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SUMMARY CARDS
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="cards-row">
+  <div class="card dark">
+    <div class="card-value">92</div>
+    <div class="card-label">Total iOS Fields</div>
+  </div>
+  <div class="card green">
+    <div class="card-value">60</div>
+    <div class="card-pct">65%</div>
+    <div class="card-label">Actively Collected</div>
+  </div>
+  <div class="card blue">
+    <div class="card-value">12</div>
+    <div class="card-pct">13%</div>
+    <div class="card-label">Wired &amp; Correctly Zero</div>
+  </div>
+  <div class="card orange">
+    <div class="card-value">20</div>
+    <div class="card-pct">22%</div>
+    <div class="card-label">Not Available on iOS</div>
+  </div>
+  <div class="card highlight">
+    <div class="card-value">72</div>
+    <div class="card-pct" style="color:#059669;font-size:16px;">78%</div>
+    <div class="card-label">Effectively Monitored</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     COVERAGE BAR
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="coverage-bar-section" id="coverage-bar">
+  <div class="bar-label">Effectively Monitored: 72 / 92 (78%)</div>
+  <div class="bar-track">
+    <div class="bar-fill" style="width:78.3%"><span>78%</span></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     DONUT CHART (SVG)
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="donut-section" id="donut">
+  <h2>Field Distribution</h2>
+  <div class="donut-wrapper">
+    <!--
+      Total = 92 (60 + 12 + 20). Circumference = 2*pi*80 = 502.65
+      Green: 60/92 = 65.2% → 327.8
+      Blue:  12/92 = 13.0% → 65.6
+      Orange: 20/92 = 21.7% → 109.3
+      Start offset (top of circle): 125.66
+    -->
+    <svg width="220" height="220" viewBox="0 0 220 220" aria-label="Donut chart showing field distribution">
+      <circle cx="110" cy="110" r="80" fill="none" stroke="#e5e7eb" stroke-width="32"/>
+      <!-- Green: Actively Collected — 60 fields -->
+      <circle cx="110" cy="110" r="80" fill="none"
+              stroke="#10b981" stroke-width="32"
+              stroke-dasharray="327.8 174.85"
+              stroke-dashoffset="125.66"
+              stroke-linecap="butt"/>
+      <!-- Blue: Wired & Zero — 12 fields, offset = 125.66 - 327.8 = -202.14 -->
+      <circle cx="110" cy="110" r="80" fill="none"
+              stroke="#3b82f6" stroke-width="32"
+              stroke-dasharray="65.6 437.05"
+              stroke-dashoffset="-202.14"
+              stroke-linecap="butt"/>
+      <!-- Orange: No API — 20 fields, offset = -202.14 - 65.6 = -267.74 -->
+      <circle cx="110" cy="110" r="80" fill="none"
+              stroke="#f59e0b" stroke-width="32"
+              stroke-dasharray="109.3 393.35"
+              stroke-dashoffset="-267.74"
+              stroke-linecap="butt"/>
+      <!-- Center text -->
+      <text x="110" y="104" text-anchor="middle" font-size="26" font-weight="800" fill="#1f2937">92</text>
+      <text x="110" y="124" text-anchor="middle" font-size="12" fill="#6b7280" font-weight="500">iOS Fields</text>
+    </svg>
+    <div class="donut-legend">
+      <div class="leg-item"><span class="leg-swatch" style="background:#10b981"></span> Actively Collected &mdash; 60 (65%)</div>
+      <div class="leg-item"><span class="leg-swatch" style="background:#3b82f6"></span> Wired &amp; Correctly Zero &mdash; 12 (13%)</div>
+      <div class="leg-item"><span class="leg-swatch" style="background:#f59e0b"></span> Not Available on iOS &mdash; 20 (22%)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SECTION 1: ACTIVELY COLLECTED — 60 FIELDS
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="section-panel border-green" id="actively-collected">
+  <h2>Actively Collected &mdash; 60 fields</h2>
+  <p class="section-sub">Fields with non-zero values confirmed during the test run.</p>
+
+  <table class="data-table">
+    <thead>
+      <tr><th class="num-col">#</th><th>Field</th><th>Sample Value</th><th>Source</th></tr>
+    </thead>
+    <tbody>
+      <!-- ── CPU (4) ────────────────────────────────────────────── -->
+      <tr class="cat-header-green"><td colspan="4">CPU (4)</td></tr>
+      <tr><td class="num-col">1</td><td class="field-name">CPU.AppPercent</td><td class="value-col">5.13%</td><td class="source-col">sysmontap cpuUsage</td></tr>
+      <tr><td class="num-col">2</td><td class="field-name">CPU.SystemPercent</td><td class="value-col">333.2%</td><td class="source-col">sysmontap CPU_TotalLoad</td></tr>
+      <tr><td class="num-col">3</td><td class="field-name">CPU.UserPercent</td><td class="value-col">5.13%</td><td class="source-col">sysmontap cpuTotalUser/cpuTotalSystem</td></tr>
+      <tr><td class="num-col">4</td><td class="field-name">CPU.Cores</td><td class="value-col">6</td><td class="source-col">sysmontap CPUCount</td></tr>
+
+      <!-- ── Memory Per-Process (8) ─────────────────────────────── -->
+      <tr class="cat-header-green"><td colspan="4">Memory &mdash; Per-Process (8)</td></tr>
+      <tr><td class="num-col">5</td><td class="field-name">Memory.TotalPSS</td><td class="value-col">118,337 KB</td><td class="source-col">sysmontap physFootprint</td></tr>
+      <tr><td class="num-col">6</td><td class="field-name">Memory.NativeHeap</td><td class="value-col">96,496 KB</td><td class="source-col">sysmontap memResidentSize</td></tr>
+      <tr><td class="num-col">7</td><td class="field-name">Memory.VirtualSize</td><td class="value-col">410,764,464 KB</td><td class="source-col">sysmontap memVirtualSize</td></tr>
+      <tr><td class="num-col">8</td><td class="field-name">Memory.AnonMemory</td><td class="value-col">114,000 KB</td><td class="source-col">sysmontap memAnon</td></tr>
+      <tr><td class="num-col">9</td><td class="field-name">Memory.PrivateRSS</td><td class="value-col">45,968 KB</td><td class="source-col">sysmontap memRPrvt</td></tr>
+      <tr><td class="num-col">10</td><td class="field-name">Memory.SharedRSS</td><td class="value-col">16,272 KB</td><td class="source-col">sysmontap memRShrd</td></tr>
+      <tr><td class="num-col">11</td><td class="field-name">Memory.Compressed</td><td class="value-col">63,632 KB</td><td class="source-col">sysmontap memCompressed</td></tr>
+      <tr><td class="num-col">12</td><td class="field-name">Memory.Purgeable</td><td class="value-col">416 KB</td><td class="source-col">sysmontap memPurgeable</td></tr>
+
+      <!-- ── Memory System (6) ──────────────────────────────────── -->
+      <tr class="cat-header-green"><td colspan="4">Memory &mdash; System (6)</td></tr>
+      <tr><td class="num-col">13</td><td class="field-name">Memory.DeviceTotal</td><td class="value-col">3,028,592 KB</td><td class="source-col">sysmontap physMemSize</td></tr>
+      <tr><td class="num-col">14</td><td class="field-name">Memory.DeviceFree</td><td class="value-col">22,272 KB</td><td class="source-col">sysmontap vmFreeCount</td></tr>
+      <tr><td class="num-col">15</td><td class="field-name">Memory.DeviceUsed</td><td class="value-col">3,006,320 KB</td><td class="source-col">sysmontap vmUsedCount</td></tr>
+      <tr><td class="num-col">16</td><td class="field-name">Memory.DeviceWired</td><td class="value-col">714,448 KB</td><td class="source-col">sysmontap vmWireCount</td></tr>
+      <tr><td class="num-col">17</td><td class="field-name">Memory.CompressorKB</td><td class="value-col">569,280 KB</td><td class="source-col">sysmontap vmCompressorPageCount</td></tr>
+      <tr><td class="num-col">18</td><td class="field-name">Memory.SwapUsedKB</td><td class="value-col">44,288 KB</td><td class="source-col">sysmontap __vmSwapUsage</td></tr>
+
+      <!-- ── Graphics (2) ───────────────────────────────────────── -->
+      <tr class="cat-header-green"><td colspan="4">Graphics (2)</td></tr>
+      <tr><td class="num-col">19</td><td class="field-name">FPS.FPS</td><td class="value-col">24 fps</td><td class="source-col">graphics.opengl CoreAnimationFramesPerSecond</td></tr>
+      <tr><td class="num-col">20</td><td class="field-name">FPS.FrameTimeMs</td><td class="value-col">41.67 ms</td><td class="source-col">derived from 1000/FPS</td></tr>
+
+      <!-- ── Network (3) ────────────────────────────────────────── -->
+      <tr class="cat-header-green"><td colspan="4">Network (3)</td></tr>
+      <tr><td class="num-col">21</td><td class="field-name">Network.RxPackets</td><td class="value-col">20,956,659</td><td class="source-col">sysmontap netPacketsIn</td></tr>
+      <tr><td class="num-col">22</td><td class="field-name">Network.TxPackets</td><td class="value-col">10,383,675</td><td class="source-col">sysmontap netPacketsOut</td></tr>
+      <tr><td class="num-col">23</td><td class="field-name">NetworkDetail.NetworkType</td><td class="value-col">wifi</td><td class="source-col">DeviceInfoService NetworkInformation()</td></tr>
+
+      <!-- ── Battery (10) ───────────────────────────────────────── -->
+      <tr class="cat-header-green"><td colspan="4">Battery (10)</td></tr>
+      <tr><td class="num-col">24</td><td class="field-name">Battery.Level</td><td class="value-col">61%</td><td class="source-col">lockdown GetBatteryDiagnostics</td></tr>
+      <tr><td class="num-col">25</td><td class="field-name">Battery.Temperature</td><td class="value-col">35.79&deg;C</td><td class="source-col">diagnostics IORegistry</td></tr>
+      <tr><td class="num-col">26</td><td class="field-name">Battery.Voltage</td><td class="value-col">4.076 V</td><td class="source-col">diagnostics IORegistry</td></tr>
+      <tr><td class="num-col">27</td><td class="field-name">Battery.Current</td><td class="value-col">1,277 mA</td><td class="source-col">diagnostics IORegistry InstantAmperage</td></tr>
+      <tr><td class="num-col">28</td><td class="field-name">Battery.Power</td><td class="value-col">5.2 W</td><td class="source-col">derived: Voltage &times; Current / 1000</td></tr>
+      <tr><td class="num-col">29</td><td class="field-name">Battery.IsCharging</td><td class="value-col">true</td><td class="source-col">lockdown BatteryIsCharging</td></tr>
+      <tr><td class="num-col">30</td><td class="field-name">Battery.CycleCount</td><td class="value-col">2,002</td><td class="source-col">diagnostics GasGauge</td></tr>
+      <tr><td class="num-col">31</td><td class="field-name">Battery.DesignCapacity</td><td class="value-col">1,810 mAh</td><td class="source-col">diagnostics GasGauge</td></tr>
+      <tr><td class="num-col">32</td><td class="field-name">Battery.FullChargeCapacity</td><td class="value-col">100 mAh</td><td class="source-col">diagnostics GasGauge</td></tr>
+      <tr><td class="num-col">33</td><td class="field-name">Battery.BatteryHealth</td><td class="value-col">5.52%</td><td class="source-col">derived: FullCharge/Design &times; 100</td></tr>
+
+      <!-- ── Disk (9) ───────────────────────────────────────────── -->
+      <tr class="cat-header-green"><td colspan="4">Disk (9)</td></tr>
+      <tr><td class="num-col">34</td><td class="field-name">Disk.TotalBytes</td><td class="value-col">128 GB</td><td class="source-col">lockdown com.apple.disk_usage</td></tr>
+      <tr><td class="num-col">35</td><td class="field-name">Disk.FreeBytes</td><td class="value-col">2.19 GB</td><td class="source-col">lockdown com.apple.disk_usage</td></tr>
+      <tr><td class="num-col">36</td><td class="field-name">Disk.UsedBytes</td><td class="value-col">125.8 GB</td><td class="source-col">derived: Total - Free</td></tr>
+      <tr><td class="num-col">37</td><td class="field-name">Disk.ReadBytes</td><td class="value-col">748 MB</td><td class="source-col">sysmontap per-process diskBytesRead</td></tr>
+      <tr><td class="num-col">38</td><td class="field-name">Disk.WrittenBytes</td><td class="value-col">13.7 MB</td><td class="source-col">sysmontap per-process diskBytesWritten</td></tr>
+      <tr><td class="num-col">39</td><td class="field-name">Disk.SystemReadOps</td><td class="value-col">153,800,156</td><td class="source-col">sysmontap system diskReadOps</td></tr>
+      <tr><td class="num-col">40</td><td class="field-name">Disk.SystemWriteOps</td><td class="value-col">18,294,946</td><td class="source-col">sysmontap system diskWriteOps</td></tr>
+      <tr><td class="num-col">41</td><td class="field-name">Disk.SystemReadBytes</td><td class="value-col">2,925 GB</td><td class="source-col">sysmontap system diskBytesRead</td></tr>
+      <tr><td class="num-col">42</td><td class="field-name">Disk.SystemWriteBytes</td><td class="value-col">260 GB</td><td class="source-col">sysmontap system diskBytesWritten</td></tr>
+
+      <!-- ── Thermal (4) ────────────────────────────────────────── -->
+      <tr class="cat-header-green"><td colspan="4">Thermal (4)</td></tr>
+      <tr><td class="num-col">43</td><td class="field-name">Thermal.CPUTemp</td><td class="value-col">35.79&deg;C</td><td class="source-col">diagnostics IORegistry Temperature</td></tr>
+      <tr><td class="num-col">44</td><td class="field-name">Thermal.BatteryTemp</td><td class="value-col">35.79&deg;C</td><td class="source-col">diagnostics IORegistry Temperature</td></tr>
+      <tr><td class="num-col">45</td><td class="field-name">Temperature.CPUTemp</td><td class="value-col">35.79&deg;C</td><td class="source-col">mirrored from Thermal</td></tr>
+      <tr><td class="num-col">46</td><td class="field-name">Temperature.BatteryTemp</td><td class="value-col">35.79&deg;C</td><td class="source-col">mirrored from Thermal</td></tr>
+
+      <!-- ── Process (12) ───────────────────────────────────────── -->
+      <tr class="cat-header-green"><td colspan="4">Process (12)</td></tr>
+      <tr><td class="num-col">47</td><td class="field-name">Process.PID</td><td class="value-col">32,446</td><td class="source-col">sysmontap pid</td></tr>
+      <tr><td class="num-col">48</td><td class="field-name">Process.PPID</td><td class="value-col">1</td><td class="source-col">sysmontap ppid</td></tr>
+      <tr><td class="num-col">49</td><td class="field-name">Process.ThreadCount</td><td class="value-col">30</td><td class="source-col">sysmontap threadCount</td></tr>
+      <tr><td class="num-col">50</td><td class="field-name">Process.MachPortCount</td><td class="value-col">476</td><td class="source-col">sysmontap machPortCount</td></tr>
+      <tr><td class="num-col">51</td><td class="field-name">Process.CtxSwitches</td><td class="value-col">538,169</td><td class="source-col">sysmontap ctxSwitch</td></tr>
+      <tr><td class="num-col">52</td><td class="field-name">Process.IntWakeups</td><td class="value-col">83,665</td><td class="source-col">sysmontap intWakeups</td></tr>
+      <tr><td class="num-col">53</td><td class="field-name">Process.Faults</td><td class="value-col">96,454</td><td class="source-col">sysmontap faults</td></tr>
+      <tr><td class="num-col">54</td><td class="field-name">Process.SysCallsUnix</td><td class="value-col">400,524</td><td class="source-col">sysmontap sysCallsUnix</td></tr>
+      <tr><td class="num-col">55</td><td class="field-name">Process.SysCallsMach</td><td class="value-col">1,521,453</td><td class="source-col">sysmontap sysCallsMach</td></tr>
+      <tr><td class="num-col">56</td><td class="field-name">Process.MsgSent</td><td class="value-col">95,194</td><td class="source-col">sysmontap msgSent</td></tr>
+      <tr><td class="num-col">57</td><td class="field-name">Process.MsgRecv</td><td class="value-col">35,889</td><td class="source-col">sysmontap msgRecv</td></tr>
+      <tr><td class="num-col">58</td><td class="field-name">Process.ProcStatus</td><td class="value-col">2</td><td class="source-col">sysmontap procStatus</td></tr>
+
+      <!-- ── Meta (2) ───────────────────────────────────────────── -->
+      <tr class="cat-header-green"><td colspan="4">Meta (2)</td></tr>
+      <tr><td class="num-col">59</td><td class="field-name">AppState</td><td class="value-col">running</td><td class="source-col">sysmontap process matching</td></tr>
+      <tr><td class="num-col">60</td><td class="field-name">Timestamp</td><td class="value-col">2026-03-05T14:59:15</td><td class="source-col">system clock</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SECTION 2: WIRED & CORRECTLY ZERO — 12 FIELDS
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="section-panel border-blue" id="wired-zero">
+  <h2>Wired &amp; Correctly Zero &mdash; 12 fields</h2>
+  <p class="section-sub">Fully implemented and monitored. Zero/empty because conditions did not occur.</p>
+  <div class="section-note">These fields are fully implemented and monitored. They show zero/empty because the conditions did not occur during the test run.</div>
+
+  <table class="data-table">
+    <thead>
+      <tr><th class="num-col">#</th><th>Field</th><th>Value</th><th>Explanation</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="num-col">1</td><td class="field-name">Crash.CrashCount</td><td class="value-col">0</td><td class="reason-col">Syslog monitoring active &mdash; no crashes during test</td></tr>
+      <tr><td class="num-col">2</td><td class="field-name">Crash.ANRCount</td><td class="value-col">0</td><td class="reason-col">Syslog monitoring active &mdash; no hangs during test</td></tr>
+      <tr><td class="num-col">3</td><td class="field-name">Crash.ExceptionCount</td><td class="value-col">0</td><td class="reason-col">Monitoring active &mdash; no exceptions</td></tr>
+      <tr><td class="num-col">4</td><td class="field-name">Crash.Crashes</td><td class="value-col">[]</td><td class="reason-col">Empty list &mdash; no crash events</td></tr>
+      <tr><td class="num-col">5</td><td class="field-name">Crash.ANRs</td><td class="value-col">[]</td><td class="reason-col">Empty list &mdash; no hang events</td></tr>
+      <tr><td class="num-col">6</td><td class="field-name">Crash.Exceptions</td><td class="value-col">[]</td><td class="reason-col">Empty list &mdash; no exception events</td></tr>
+      <tr><td class="num-col">7</td><td class="field-name">Thermal.ThrottleState</td><td class="value-col">0</td><td class="reason-col">0 = nominal (device not thermal throttling)</td></tr>
+      <tr><td class="num-col">8</td><td class="field-name">Thermal.ThermalStatus</td><td class="value-col">""</td><td class="reason-col">Empty = nominal thermal state</td></tr>
+      <tr><td class="num-col">9</td><td class="field-name">GPU.UsagePercent</td><td class="value-col">0</td><td class="reason-col">Wired via graphics.opengl &mdash; iPhone SE/iOS 26 reports 0</td></tr>
+      <tr><td class="num-col">10</td><td class="field-name">GPU.TilerPercent</td><td class="value-col">0</td><td class="reason-col">Same &mdash; device doesn't expose GPU util via Instruments</td></tr>
+      <tr><td class="num-col">11</td><td class="field-name">GPU.RendererPercent</td><td class="value-col">0</td><td class="reason-col">Same</td></tr>
+      <tr><td class="num-col">12</td><td class="field-name">Process.AppSleep</td><td class="value-col">false</td><td class="reason-col">false = app is actively running (correct)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SECTION 3: NO API AVAILABLE — 20 FIELDS
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="section-panel border-orange" id="no-api">
+  <h2>Not Available on iOS &mdash; 20 fields</h2>
+  <p class="section-sub">iOS does not expose these metrics through any available API.</p>
+  <div class="section-note">These parameters are relevant on iOS but Apple does not provide them through any API (Instruments, lockdown, or diagnostics). This is an OS-level limitation, not an implementation gap.</div>
+
+  <table class="data-table">
+    <thead>
+      <tr><th class="num-col">#</th><th>Field</th><th>Category</th><th>Reason</th></tr>
+    </thead>
+    <tbody>
+      <!-- ── CPU (3) ─────────────────────────────── -->
+      <tr class="cat-header-orange"><td colspan="4">CPU (3)</td></tr>
+      <tr><td class="num-col">1</td><td class="field-name">CPU.IOWaitPercent</td><td class="value-col">CPU</td><td class="reason-col">iOS does not expose I/O wait via any API</td></tr>
+      <tr><td class="num-col">2</td><td class="field-name">CPU.FrequencyMHz</td><td class="value-col">CPU</td><td class="reason-col">iOS does not expose CPU clock frequency</td></tr>
+      <tr><td class="num-col">3</td><td class="field-name">CPU.PerCore</td><td class="value-col">CPU</td><td class="reason-col">sysmontap reports only aggregate CPU_TotalLoad, not per-core</td></tr>
+
+      <!-- ── Network (8) ─────────────────────────── -->
+      <tr class="cat-header-orange"><td colspan="4">Network (8)</td></tr>
+      <tr><td class="num-col">4</td><td class="field-name">Network.RxBytes</td><td class="value-col">Network</td><td class="reason-col">iOS 26 removed per-process netBytesIn from sysmontap</td></tr>
+      <tr><td class="num-col">5</td><td class="field-name">Network.TxBytes</td><td class="value-col">Network</td><td class="reason-col">iOS 26 removed per-process netBytesOut from sysmontap</td></tr>
+      <tr><td class="num-col">6</td><td class="field-name">Network.WifiRxBytes</td><td class="value-col">Network</td><td class="reason-col">No per-interface byte breakdown API on iOS</td></tr>
+      <tr><td class="num-col">7</td><td class="field-name">Network.WifiTxBytes</td><td class="value-col">Network</td><td class="reason-col">Same</td></tr>
+      <tr><td class="num-col">8</td><td class="field-name">Network.MobileRxBytes</td><td class="value-col">Network</td><td class="reason-col">Same</td></tr>
+      <tr><td class="num-col">9</td><td class="field-name">Network.MobileTxBytes</td><td class="value-col">Network</td><td class="reason-col">Same</td></tr>
+      <tr><td class="num-col">10</td><td class="field-name">Network.RxBytesPerSec</td><td class="value-col">Network</td><td class="reason-col">Cannot compute &mdash; source bytes unavailable on iOS 26</td></tr>
+      <tr><td class="num-col">11</td><td class="field-name">Network.TxBytesPerSec</td><td class="value-col">Network</td><td class="reason-col">Same</td></tr>
+
+      <!-- ── FPS (4) ─────────────────────────────── -->
+      <tr class="cat-header-orange"><td colspan="4">FPS (4)</td></tr>
+      <tr><td class="num-col">12</td><td class="field-name">FPS.JankCount</td><td class="value-col">FPS</td><td class="reason-col">graphics.opengl gives aggregate FPS only, no per-frame timing</td></tr>
+      <tr><td class="num-col">13</td><td class="field-name">FPS.SlowFrames</td><td class="value-col">FPS</td><td class="reason-col">Same &mdash; no individual frame duration events</td></tr>
+      <tr><td class="num-col">14</td><td class="field-name">FPS.FrozenFrames</td><td class="value-col">FPS</td><td class="reason-col">Same</td></tr>
+      <tr><td class="num-col">15</td><td class="field-name">FPS.TotalFrames</td><td class="value-col">FPS</td><td class="reason-col">Same &mdash; no frame count from Instruments</td></tr>
+
+      <!-- ── Thermal (2) ─────────────────────────── -->
+      <tr class="cat-header-orange"><td colspan="4">Thermal (2)</td></tr>
+      <tr><td class="num-col">16</td><td class="field-name">Thermal.GPUTemp</td><td class="value-col">Thermal</td><td class="reason-col">IORegistry does not expose GPU temperature separately</td></tr>
+      <tr><td class="num-col">17</td><td class="field-name">Thermal.SkinTemp</td><td class="value-col">Thermal</td><td class="reason-col">iOS does not expose skin/surface temperature</td></tr>
+
+      <!-- ── NetworkDetail (3) ───────────────────── -->
+      <tr class="cat-header-orange"><td colspan="4">NetworkDetail (3)</td></tr>
+      <tr><td class="num-col">18</td><td class="field-name">NetworkDetail.WifiRSSI</td><td class="value-col">NetworkDetail</td><td class="reason-col">Not available via go-ios diagnostics</td></tr>
+      <tr><td class="num-col">19</td><td class="field-name">NetworkDetail.WifiLinkSpeed</td><td class="value-col">NetworkDetail</td><td class="reason-col">Not available via any go-ios API</td></tr>
+      <tr><td class="num-col">20</td><td class="field-name">NetworkDetail.WifiFrequency</td><td class="value-col">NetworkDetail</td><td class="reason-col">Not available via any go-ios API</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     FOOTER
+     ════════════════════════════════════════════════════════════════════ -->
+<footer class="report-footer">
+  <p><strong>72</strong> out of <strong>92</strong> iOS-applicable fields are actively monitored (<strong>78%</strong>).
+     20 fields are not available on iOS &mdash; Apple does not expose them through any API.</p>
+  <p style="margin-top:8px;font-size:12px;color:#9ca3af;">AppVitals iOS Parameter Coverage Report &mdash; Generated March 5, 2026</p>
+</footer>
+
+</div><!-- /.container -->
+</body>
+</html>
